@@ -10,5 +10,29 @@
     "max_retries": 5,
     "min_sharpe": 1.2,
     "max_oos_degradation_pct": 30.0
+  },
+  "execution": {
+    "default": {
+      "fee_bps_per_side": 1.0,
+      "slippage_bps_per_side": 1.0
+    },
+    "market_costs": {
+      "forex": {
+        "fee_bps_per_side": 0.4,
+        "slippage_bps_per_side": 0.6
+      },
+      "crypto": {
+        "fee_bps_per_side": 3.0,
+        "slippage_bps_per_side": 2.0
+      },
+      "equities": {
+        "fee_bps_per_side": 1.0,
+        "slippage_bps_per_side": 1.5
+      },
+      "indices": {
+        "fee_bps_per_side": 0.8,
+        "slippage_bps_per_side": 1.2
+      }
+    }
   }
 }

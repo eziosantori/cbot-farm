@@ -62,6 +62,7 @@ def run_cycle(
             markets_filter=markets_filter,
             symbols_filter=symbols_filter,
             timeframes_filter=timeframes_filter,
+            execution_cfg=risk.get("execution", {}),
         )
         gates = evaluate_gates(metrics, risk)
         score = metrics.total_return_pct - metrics.max_drawdown_pct

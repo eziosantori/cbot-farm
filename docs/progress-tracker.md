@@ -37,7 +37,9 @@ From now on, every completed implementation step must immediately update this fi
   - Completed: 2026-02-10
   - Notes: Added `BaseBotStrategy`, `bots/ema_cross_atr.py`, strategy registry, and pipeline strategy selection.
 - [ ] Add robust IS/OOS walk-forward split logic
-- [ ] Add per-market transaction cost profiles
+- [x] Add per-market transaction cost profiles
+  - Completed: 2026-02-10
+  - Notes: Added fee/slippage profiles in `config/risk.json` and market-aware cost application in backtest reports.
 - [ ] Add Backtrader parity validation step (cross-check core strategy outputs)
 
 ### M2 - Web UI Phase 1 (Planned)
@@ -58,11 +60,11 @@ From now on, every completed implementation step must immediately update this fi
 ## Active Task Board
 
 ### Now
-- [ ] Start M1.4: per-market transaction cost profiles
+- [ ] Start M1.3: robust IS/OOS walk-forward split logic
 
 ### Next
-- [ ] Start M1.3: robust IS/OOS walk-forward split logic
 - [ ] Start M1.5: Backtrader parity validation
+- [ ] Start M2.1: backend bootstrap (`api/`)
 
 ### Blocked / Decisions Needed
 - [ ] Finalize UI design system choice (minimal custom vs component library)
@@ -72,3 +74,5 @@ From now on, every completed implementation step must immediately update this fi
 - 2026-02-10: Added Backtrader parity milestone step.
 - 2026-02-10: Completed ATR stop/take-profit + trade log task in M1.
 - 2026-02-10: Completed strategy-engine separation with `bots/` and base class.
+
+- 2026-02-10: Completed per-market transaction cost profiles.

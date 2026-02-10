@@ -135,6 +135,36 @@ def _close_trade(
     return trade
 
 
+def _resolve_trade_cost(
+    strategy: BaseBotStrategy,
+    market: str,
+    timeframe: str,
+    execution_cfg: Optional[dict],
+) -> tuple[float, dict]:
+    cfg = execution_cfg or {}
+    default_cfg = cfg.get("default", {})
+    market_cfg = cfg.get("market_costs", {}).get(market.lower(), {})
+
+    fee_bps = float(market_cfg.get("fee_bps_per_side", default_cfg.get("fee_bps_per_side", 0.0)))
+    slippage_bps = float(
+        market_cfg.get("slippage_bps_per_side", default_cfg.get("slippage_bps_per_side", 0.0))
+    )
+
+    if fee_bps == 0.0 and slippage_bps == 0.0:
+        per_side_cost = strategy.default_trade_cost(market=market, timeframe=timeframe)
+    else:
+        per_side_cost = (fee_bps + slippage_bps) / 10000.0
+
+    profile = {
+        "market": market,
+        "timeframe": timeframe,
+        "fee_bps_per_side": fee_bps,
+        "slippage_bps_per_side": slippage_bps,
+        "per_side_cost_fraction": round(per_side_cost, 8),
+    }
+    return per_side_cost, profile
+
+
 def run_real_backtest(
     strategy: BaseBotStrategy,
     params: dict,
@@ -142,6 +172,7 @@ def run_real_backtest(
     markets_filter: Optional[List[str]],
     symbols_filter: Optional[List[str]],
     timeframes_filter: Optional[List[str]],
+    execution_cfg: Optional[dict] = None,
 ) -> tuple[Metrics, dict]:
     candidates = _find_candidate_files(
         data_root=data_root,
@@ -182,8 +213,13 @@ def run_real_backtest(
     indicators = strategy.prepare_indicators(bars=bars, params=params)
 
     timeframe = dataset_path.parent.parent.name if dataset_path.parent.name == "download" else dataset_path.parent.name
-    market = dataset_path.parent.parent.parent.name if dataset_path.parent.name == "download" else "unknown"
-    per_trade_cost = strategy.default_trade_cost(market=market, timeframe=timeframe)
+    market = dataset_path.parent.parent.parent.parent.name if dataset_path.parent.name == "download" else "unknown"
+    per_trade_cost, cost_profile = _resolve_trade_cost(
+        strategy=strategy,
+        market=market,
+        timeframe=timeframe,
+        execution_cfg=execution_cfg,
+    )
 
     position = 0
     stop_price = None
@@ -310,6 +346,7 @@ def run_real_backtest(
         "timeframe": timeframe,
         "strategy_id": strategy.strategy_id,
         "params_effective": params,
+        "cost_profile": cost_profile,
         "per_trade_cost": per_trade_cost,
         "trades_count": len(trade_log),
         "win_rate_pct": round(win_rate, 2),
