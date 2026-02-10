@@ -8,6 +8,7 @@ def optimize_params(iteration: int) -> dict:
         "ema_fast": 20 + iteration,
         "ema_slow": 50 + iteration,
         "atr_mult_stop": round(1.2 + 0.1 * random(), 2),
+        "atr_mult_take": round(1.8 + 0.2 * random(), 2),
     }
 
 

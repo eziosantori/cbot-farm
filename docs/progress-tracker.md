@@ -7,7 +7,7 @@ From now on, every completed implementation step must immediately update this fi
 - adding a short outcome note
 
 ## Project Status
-- Current phase: `Planning / UI bootstrap pending`
+- Current phase: `M1 - Real Backtest Core (in progress)`
 - Last updated: `2026-02-10`
 
 ## Milestone Checklist
@@ -30,9 +30,12 @@ From now on, every completed implementation step must immediately update this fi
 - [x] Replace random stub with real CSV-based backtest
   - Completed: 2026-02-10
   - Notes: EMA cross backtest with real metrics integrated.
-- [ ] Add ATR-based stop/take-profit and trade log
+- [x] Add ATR-based stop/take-profit and trade log
+  - Completed: 2026-02-10
+  - Notes: Implemented ATR exits and structured per-trade logging in backtest details.
 - [ ] Add robust IS/OOS walk-forward split logic
 - [ ] Add per-market transaction cost profiles
+- [ ] Add Backtrader parity validation step (cross-check core strategy outputs)
 
 ### M2 - Web UI Phase 1 (Planned)
 - [ ] Bootstrap backend (`FastAPI`) in `api/`
@@ -52,14 +55,16 @@ From now on, every completed implementation step must immediately update this fi
 ## Active Task Board
 
 ### Now
-- [ ] Start M2.1: backend bootstrap (`api/`)
+- [ ] Start M1.3: robust IS/OOS walk-forward split logic
 
 ### Next
-- [ ] Start M2.4: frontend bootstrap (`web/`)
-- [ ] Start M2.5: dashboard tables
+- [ ] Start M1.4: per-market transaction cost profiles
+- [ ] Start M1.5: Backtrader parity validation
 
 ### Blocked / Decisions Needed
 - [ ] Finalize UI design system choice (minimal custom vs component library)
 
 ## Change Log
 - 2026-02-10: Added initial UI implementation plan and formal tracker process.
+- 2026-02-10: Added Backtrader parity milestone step.
+- 2026-02-10: Completed ATR stop/take-profit + trade log task in M1.
