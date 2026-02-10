@@ -10,7 +10,9 @@
     "ingest": "python3 -m cbot_farm.cli --ingest-only",
     "ingest:fx:h1": "python3 -m cbot_farm.cli --ingest-only --markets forex --timeframes 1h",
     "ingest:eurusd:h1": "python3 -m cbot_farm.cli --ingest-only --markets forex --symbols EURUSD --timeframes 1h",
-    "check": "python3 -m py_compile scripts/run_cycle.py cbot_farm/*.py"
+    "ingest:nas:h1": "python3 -m cbot_farm.cli --ingest-only --markets indices --symbols NAS100 --timeframes 1h",
+    "check": "python3 -m py_compile scripts/run_cycle.py cbot_farm/*.py",
+    "verify:instruments": "python3 scripts/verify_instruments.py"
   },
   "engines": {
     "node": ">=18"

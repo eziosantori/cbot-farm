@@ -24,6 +24,30 @@ def sanitize_symbol(symbol: str) -> str:
     return symbol.replace("/", "").replace("-", "").lower()
 
 
+def map_instrument(symbol: str, market: Optional[str] = None) -> str:
+    normalized = sanitize_symbol(symbol)
+    market_key = (market or "").lower()
+
+    # Human-friendly aliases for index symbols.
+    index_aliases = {
+        "US500": "usa500idxusd",
+        "NAS100": "usatechidxusd",
+        "GER40": "deuidxeur",
+        "UK100": "gbridxgbp",
+        "JPN225": "jpnidxjpy",
+        "AUS200": "ausidxaud",
+    }
+    mapped_index = index_aliases.get(symbol.upper())
+    if mapped_index:
+        return mapped_index
+
+    # Dukascopy equity instruments are usually <ticker>ususd.
+    if market_key == "equities" and not normalized.endswith("ususd"):
+        return f"{normalized}ususd"
+
+    return normalized
+
+
 def matches_filter(value: str, values_filter: Optional[Iterable[str]]) -> bool:
     if not values_filter:
         return True
@@ -32,6 +56,7 @@ def matches_filter(value: str, values_filter: Optional[Iterable[str]]) -> bool:
 
 
 def run_dukascopy_download(
+    market: str,
     symbol: str,
     timeframe: str,
     date_from: str,
@@ -40,7 +65,7 @@ def run_dukascopy_download(
     timeout_seconds: int,
 ) -> Dict[str, Optional[str]]:
     target_dir.mkdir(parents=True, exist_ok=True)
-    instrument = sanitize_symbol(symbol)
+    instrument = map_instrument(symbol, market)
     dk_timeframe = map_timeframe(timeframe)
 
     cmd = [
@@ -143,6 +168,7 @@ def ingest_data(
 
                 target_dir = output_root / market / sanitize_symbol(symbol) / timeframe
                 result = run_dukascopy_download(
+                    market=market,
                     symbol=symbol,
                     timeframe=timeframe,
                     date_from=date_from,

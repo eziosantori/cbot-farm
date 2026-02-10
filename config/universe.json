@@ -1,7 +1,7 @@
 {
   "markets": {
     "crypto": {
-      "symbols": ["BTCUSD", "ETHUSD", "SOLUSD"],
+      "symbols": ["BTCUSD", "ETHUSD", "LTCUSD"],
       "timeframes": ["5m", "15m", "1h"]
     },
     "forex": {

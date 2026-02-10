@@ -20,6 +20,7 @@ Initial framework to design, test, and optimize simple strategies across multipl
   - `optimization.py` parameter/gates logic.
   - `config.py` configuration loading.
 - `scripts/run_cycle.py` compatibility launcher.
+- `scripts/verify_instruments.py` instrument validation utility.
 - `config/` instrument universe, timeframes, and risk constraints.
 - `data/dukascopy/` downloaded historical data.
 - `reports/` per-run JSON outputs.
@@ -55,11 +56,17 @@ npm run ingest:fx:h1
 # Ingestion only for EURUSD 1h
 npm run ingest:eurusd:h1
 
+# Ingestion only for NAS100 1h
+npm run ingest:nas:h1
+
 # Skip ingestion and run only the loop
 npm run cycle:no-ingest
 
 # Basic python syntax check
 npm run check
+
+# Validate all configured symbols against Dukascopy
+npm run verify:instruments
 ```
 
 ## Direct Python Commands
@@ -67,6 +74,7 @@ npm run check
 ```bash
 python3 -m cbot_farm.cli --ingest-only --markets forex --symbols EURUSD --timeframes 1h
 python3 -m cbot_farm.cli --skip-ingest --iterations 3
+python3 scripts/verify_instruments.py
 ```
 
 Each ingestion run writes a manifest file to `reports/ingest/manifest_*.json`.
@@ -77,6 +85,20 @@ Data download is executed with `dukascopy-node`, using this command shape per sy
 
 ```bash
 npx dukascopy-node -i <instrument> -from <YYYY-MM-DD> -to <YYYY-MM-DD> -t <timeframe> -f csv
+```
+
+## Instrument Discovery / Validation Commands
+
+Debug command used to inspect provider-side instrument validation details:
+
+```bash
+npx dukascopy-node -d -i __invalid__ -from 2024-01-01 -to 2024-01-02 -t h1 -f csv
+```
+
+Authoritative check used in this project (runs a real short download check for each configured symbol after mapping):
+
+```bash
+npm run verify:instruments
 ```
 
 For exact provider details and instrument coverage, refer to:
