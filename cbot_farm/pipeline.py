@@ -3,10 +3,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional
 
+from bots import get_strategy
 from .backtest import run_real_backtest
 from .config import REPORTS_DIR, ROOT, load_configs
 from .ingestion import ingest_data
-from .optimization import evaluate_gates, optimize_params
+from .optimization import evaluate_gates
 
 
 def run_cycle(
@@ -18,9 +19,12 @@ def run_cycle(
     markets_filter: Optional[List[str]],
     symbols_filter: Optional[List[str]],
     timeframes_filter: Optional[List[str]],
+    strategy_id: str,
 ) -> None:
     universe, risk = load_configs()
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+
+    strategy = get_strategy(strategy_id)
 
     if skip_ingest:
         ingest_state = {
@@ -50,8 +54,9 @@ def run_cycle(
     data_root = ROOT / universe.get("ingestion", {}).get("output_dir", "data/dukascopy")
 
     for iteration in range(1, iterations + 1):
-        params = optimize_params(iteration)
+        params = strategy.sample_params(iteration)
         metrics, bt_details = run_real_backtest(
+            strategy=strategy,
             params=params,
             data_root=data_root,
             markets_filter=markets_filter,
@@ -72,7 +77,8 @@ def run_cycle(
             "run_id": f"{run_id}_{iteration}",
             "iteration": iteration,
             "ingest": ingest_state,
-            "strategy": "S1 Trend EMA Cross (real backtest)",
+            "strategy": strategy.display_name,
+            "strategy_id": strategy.strategy_id,
             "market": markets_filter[0] if markets_filter and len(markets_filter) == 1 else "multi",
             "timeframes": timeframes_filter or ["5m", "15m", "1h"],
             "params": params,

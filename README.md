@@ -12,12 +12,16 @@ Initial framework to design, test, and optimize simple strategies across multipl
 
 ## Structure
 
-- `cbot_farm/` modular Python package.
+- `bots/` strategy files (human-readable, one bot per file).
+  - `base.py` strategy base class.
+  - `ema_cross_atr.py` first concrete bot.
+- `cbot_farm/` engine and orchestration package.
   - `cli.py` command-line entrypoint.
   - `pipeline.py` end-to-end cycle orchestration.
+  - `backtest.py` execution engine (strategy-agnostic).
   - `ingestion.py` Dukascopy download logic.
-  - `backtest.py` backtest layer (currently stub).
-  - `optimization.py` parameter/gates logic.
+  - `optimization.py` risk gates.
+  - `indicators.py` shared indicators.
   - `config.py` configuration loading.
 - `scripts/run_cycle.py` compatibility launcher.
 - `scripts/verify_instruments.py` instrument validation utility.
@@ -47,6 +51,9 @@ npm run cycle
 # Fast single-cycle run on EURUSD 1h
 npm run cycle:quick
 
+# List available strategy ids
+npm run list:strategies
+
 # Ingestion only (all configured markets/symbols/timeframes)
 npm run ingest
 
@@ -72,8 +79,9 @@ npm run verify:instruments
 ## Direct Python Commands
 
 ```bash
-python3 -m cbot_farm.cli --ingest-only --markets forex --symbols EURUSD --timeframes 1h
-python3 -m cbot_farm.cli --skip-ingest --iterations 3
+python3 -m cbot_farm.cli --list-strategies
+python3 -m cbot_farm.cli --strategy ema_cross_atr --ingest-only --markets forex --symbols EURUSD --timeframes 1h
+python3 -m cbot_farm.cli --strategy ema_cross_atr --skip-ingest --iterations 3
 python3 scripts/verify_instruments.py
 ```
 

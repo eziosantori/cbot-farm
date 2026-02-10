@@ -33,6 +33,9 @@ From now on, every completed implementation step must immediately update this fi
 - [x] Add ATR-based stop/take-profit and trade log
   - Completed: 2026-02-10
   - Notes: Implemented ATR exits and structured per-trade logging in backtest details.
+- [x] Separate bot definitions from engine (`bots/` + base class)
+  - Completed: 2026-02-10
+  - Notes: Added `BaseBotStrategy`, `bots/ema_cross_atr.py`, strategy registry, and pipeline strategy selection.
 - [ ] Add robust IS/OOS walk-forward split logic
 - [ ] Add per-market transaction cost profiles
 - [ ] Add Backtrader parity validation step (cross-check core strategy outputs)
@@ -55,10 +58,10 @@ From now on, every completed implementation step must immediately update this fi
 ## Active Task Board
 
 ### Now
-- [ ] Start M1.3: robust IS/OOS walk-forward split logic
+- [ ] Start M1.4: per-market transaction cost profiles
 
 ### Next
-- [ ] Start M1.4: per-market transaction cost profiles
+- [ ] Start M1.3: robust IS/OOS walk-forward split logic
 - [ ] Start M1.5: Backtrader parity validation
 
 ### Blocked / Decisions Needed
@@ -68,3 +71,4 @@ From now on, every completed implementation step must immediately update this fi
 - 2026-02-10: Added initial UI implementation plan and formal tracker process.
 - 2026-02-10: Added Backtrader parity milestone step.
 - 2026-02-10: Completed ATR stop/take-profit + trade log task in M1.
+- 2026-02-10: Completed strategy-engine separation with `bots/` and base class.

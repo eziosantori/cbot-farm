@@ -1,15 +1,4 @@
-from random import random
-
 from .types import Metrics
-
-
-def optimize_params(iteration: int) -> dict:
-    return {
-        "ema_fast": 20 + iteration,
-        "ema_slow": 50 + iteration,
-        "atr_mult_stop": round(1.2 + 0.1 * random(), 2),
-        "atr_mult_take": round(1.8 + 0.2 * random(), 2),
-    }
 
 
 def evaluate_gates(metrics: Metrics, risk_cfg: dict) -> dict:

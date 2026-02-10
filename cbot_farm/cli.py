@@ -1,6 +1,7 @@
 import argparse
 from typing import List, Optional
 
+from bots import list_strategies
 from .pipeline import run_cycle
 
 
@@ -32,12 +33,23 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Comma-separated timeframe filter (e.g. 5m,1h)",
     )
+    parser.add_argument(
+        "--strategy",
+        default="ema_cross_atr",
+        help="Strategy id (use --list-strategies to see available)",
+    )
+    parser.add_argument("--list-strategies", action="store_true")
     return parser
 
 
 def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
+
+    if args.list_strategies:
+        for sid, name in list_strategies().items():
+            print(f"{sid}: {name}")
+        return
 
     run_cycle(
         iterations=args.iterations,
@@ -48,6 +60,7 @@ def main() -> None:
         markets_filter=_split_csv(args.markets),
         symbols_filter=_split_csv(args.symbols),
         timeframes_filter=_split_csv(args.timeframes),
+        strategy_id=args.strategy,
     )
 
 
