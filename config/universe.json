@@ -1,0 +1,25 @@
+{
+  "markets": {
+    "crypto": {
+      "symbols": ["BTCUSD", "ETHUSD", "SOLUSD"],
+      "timeframes": ["5m", "15m", "1h"]
+    },
+    "forex": {
+      "symbols": ["EURUSD", "GBPUSD", "USDJPY"],
+      "timeframes": ["5m", "15m", "1h"]
+    },
+    "equities": {
+      "symbols": ["AAPL", "MSFT", "NVDA", "GOOGL", "AMZN", "TSLA"],
+      "timeframes": ["5m", "15m", "1h"]
+    },
+    "indices": {
+      "symbols": ["US500", "NAS100", "GER40", "UK100", "JPN225", "AUS200"],
+      "timeframes": ["5m", "15m", "1h"]
+    }
+  },
+  "source": {
+    "provider": "dukascopy-node",
+    "format": "csv",
+    "timezone": "UTC"
+  }
+}
