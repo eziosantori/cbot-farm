@@ -1,0 +1,18 @@
+{
+  "name": "cbot-farm",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Multi-market bot lab with Dukascopy ingestion and iterative backtest pipeline",
+  "scripts": {
+    "cycle": "python3 -m cbot_farm.cli",
+    "cycle:quick": "python3 -m cbot_farm.cli --iterations 1 --markets forex --symbols EURUSD --timeframes 1h",
+    "cycle:no-ingest": "python3 -m cbot_farm.cli --skip-ingest --iterations 3",
+    "ingest": "python3 -m cbot_farm.cli --ingest-only",
+    "ingest:fx:h1": "python3 -m cbot_farm.cli --ingest-only --markets forex --timeframes 1h",
+    "ingest:eurusd:h1": "python3 -m cbot_farm.cli --ingest-only --markets forex --symbols EURUSD --timeframes 1h",
+    "check": "python3 -m py_compile scripts/run_cycle.py cbot_farm/*.py"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

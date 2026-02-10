@@ -21,5 +21,11 @@
     "provider": "dukascopy-node",
     "format": "csv",
     "timezone": "UTC"
+  },
+  "ingestion": {
+    "from": "2024-01-01",
+    "to": "2024-12-31",
+    "output_dir": "data/dukascopy",
+    "timeout_seconds": 180
   }
 }
