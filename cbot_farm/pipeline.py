@@ -3,8 +3,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional
 
-from .backtest import simulate_backtest
-from .config import REPORTS_DIR, load_configs
+from .backtest import run_real_backtest
+from .config import REPORTS_DIR, ROOT, load_configs
 from .ingestion import ingest_data
 from .optimization import evaluate_gates, optimize_params
 
@@ -47,9 +47,17 @@ def run_cycle(
     retries_without_improvement = 0
     best_score = float("-inf")
 
+    data_root = ROOT / universe.get("ingestion", {}).get("output_dir", "data/dukascopy")
+
     for iteration in range(1, iterations + 1):
         params = optimize_params(iteration)
-        metrics = simulate_backtest()
+        metrics, bt_details = run_real_backtest(
+            params=params,
+            data_root=data_root,
+            markets_filter=markets_filter,
+            symbols_filter=symbols_filter,
+            timeframes_filter=timeframes_filter,
+        )
         gates = evaluate_gates(metrics, risk)
         score = metrics.total_return_pct - metrics.max_drawdown_pct
 
@@ -64,10 +72,11 @@ def run_cycle(
             "run_id": f"{run_id}_{iteration}",
             "iteration": iteration,
             "ingest": ingest_state,
-            "strategy": "S1 Trend EMA Breakout",
-            "market": "multi",
-            "timeframes": ["5m", "15m", "1h"],
+            "strategy": "S1 Trend EMA Cross (real backtest)",
+            "market": markets_filter[0] if markets_filter and len(markets_filter) == 1 else "multi",
+            "timeframes": timeframes_filter or ["5m", "15m", "1h"],
             "params": params,
+            "backtest": bt_details,
             "metrics": metrics.__dict__,
             "gates": gates,
             "retries_without_improvement": retries_without_improvement,
