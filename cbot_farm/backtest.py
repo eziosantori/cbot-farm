@@ -94,7 +94,7 @@ def _max_drawdown_pct(equity_curve: List[float]) -> float:
     return max_dd * 100.0
 
 
-def _oos_degradation_pct(returns: List[float]) -> float:
+def _simple_oos_degradation_pct(returns: List[float]) -> float:
     n = len(returns)
     if n < 20:
         return 100.0
@@ -110,6 +110,132 @@ def _oos_degradation_pct(returns: List[float]) -> float:
 
     degradation = ((is_total - oos_total) / abs(is_total)) * 100.0
     return max(0.0, round(degradation, 2))
+
+
+def _segment_metrics(segment_returns: List[float], bars_per_year: int) -> dict:
+    if not segment_returns:
+        return {
+            "bars": 0,
+            "total_return_pct": 0.0,
+            "sharpe": 0.0,
+            "max_drawdown_pct": 0.0,
+        }
+
+    total_return = (math.prod((1.0 + r) for r in segment_returns) - 1.0) * 100.0
+    std = pstdev(segment_returns) if len(segment_returns) > 1 else 0.0
+    sharpe = (mean(segment_returns) / std) * math.sqrt(bars_per_year) if std > 0 else 0.0
+
+    equity = [1.0]
+    for r in segment_returns:
+        equity.append(equity[-1] * (1.0 + r))
+    max_dd = _max_drawdown_pct(equity)
+
+    return {
+        "bars": len(segment_returns),
+        "total_return_pct": round(total_return, 4),
+        "sharpe": round(sharpe, 4),
+        "max_drawdown_pct": round(max_dd, 4),
+    }
+
+
+def _walk_forward_analysis(
+    returns: List[float],
+    bars_per_year: int,
+    is_ratio: float = 0.6,
+    val_ratio: float = 0.2,
+    oos_ratio: float = 0.2,
+) -> dict:
+    if abs((is_ratio + val_ratio + oos_ratio) - 1.0) > 1e-9:
+        raise ValueError("walk-forward ratios must sum to 1.0")
+
+    n = len(returns)
+    if n < 60:
+        return {
+            "status": "insufficient",
+            "reason": f"not enough bars for robust walk-forward ({n})",
+            "windows_count": 0,
+        }
+
+    window_size = max(60, int(n * 0.5))
+    if window_size > n:
+        window_size = n
+    step_size = max(20, window_size // 3)
+
+    windows = []
+    for start in range(0, n - window_size + 1, step_size):
+        end = start + window_size
+        segment = returns[start:end]
+
+        is_end = start + int(window_size * is_ratio)
+        val_end = is_end + int(window_size * val_ratio)
+        oos_end = end
+
+        # Guard against tiny splits from rounding.
+        if is_end <= start or val_end <= is_end or oos_end <= val_end:
+            continue
+
+        is_seg = returns[start:is_end]
+        val_seg = returns[is_end:val_end]
+        oos_seg = returns[val_end:oos_end]
+
+        is_m = _segment_metrics(is_seg, bars_per_year)
+        val_m = _segment_metrics(val_seg, bars_per_year)
+        oos_m = _segment_metrics(oos_seg, bars_per_year)
+
+        if is_m["total_return_pct"] > 0:
+            degradation = (
+                (is_m["total_return_pct"] - oos_m["total_return_pct"])
+                / abs(is_m["total_return_pct"])
+            ) * 100.0
+            degradation = max(0.0, round(degradation, 4))
+        else:
+            degradation = 100.0
+
+        windows.append(
+            {
+                "start_index": start,
+                "end_index": end,
+                "is": is_m,
+                "validation": val_m,
+                "oos": oos_m,
+                "oos_degradation_pct": round(degradation, 4),
+            }
+        )
+
+    if not windows:
+        return {
+            "status": "insufficient",
+            "reason": "unable to build valid walk-forward windows",
+            "windows_count": 0,
+        }
+
+    avg_is = mean(w["is"]["total_return_pct"] for w in windows)
+    avg_val = mean(w["validation"]["total_return_pct"] for w in windows)
+    avg_oos = mean(w["oos"]["total_return_pct"] for w in windows)
+    avg_deg = mean(w["oos_degradation_pct"] for w in windows)
+    oos_positive_rate = (
+        sum(1 for w in windows if w["oos"]["total_return_pct"] > 0) / len(windows)
+    ) * 100.0
+
+    return {
+        "status": "ok",
+        "window_size": window_size,
+        "step_size": step_size,
+        "ratios": {
+            "is": is_ratio,
+            "validation": val_ratio,
+            "oos": oos_ratio,
+        },
+        "windows_count": len(windows),
+        "summary": {
+            "avg_is_return_pct": round(avg_is, 4),
+            "avg_validation_return_pct": round(avg_val, 4),
+            "avg_oos_return_pct": round(avg_oos, 4),
+            "avg_oos_degradation_pct": round(avg_deg, 4),
+            "oos_positive_windows_pct": round(oos_positive_rate, 2),
+        },
+        "windows": windows,
+    }
 
 
 def _close_trade(
@@ -329,11 +455,17 @@ def run_real_backtest(
     returns_std = pstdev(returns) if len(returns) > 1 else 0.0
     sharpe = (mean(returns) / returns_std) * math.sqrt(_bars_per_year(timeframe)) if returns_std > 0 else 0.0
 
+    walk_forward = _walk_forward_analysis(returns=returns, bars_per_year=_bars_per_year(timeframe))
+    if walk_forward.get("status") == "ok":
+        oos_degradation_pct = float(walk_forward["summary"]["avg_oos_degradation_pct"])
+    else:
+        oos_degradation_pct = _simple_oos_degradation_pct(returns)
+
     metrics = Metrics(
         total_return_pct=round(total_return, 2),
         sharpe=round(sharpe, 2),
         max_drawdown_pct=round(max_dd, 2),
-        oos_degradation_pct=_oos_degradation_pct(returns),
+        oos_degradation_pct=round(oos_degradation_pct, 2),
     )
 
     wins = sum(1 for trade in trade_log if trade["net_pnl_pct"] > 0)
@@ -350,6 +482,7 @@ def run_real_backtest(
         "per_trade_cost": per_trade_cost,
         "trades_count": len(trade_log),
         "win_rate_pct": round(win_rate, 2),
+        "walk_forward": walk_forward,
         "trade_log": trade_log,
     }
     return metrics, details

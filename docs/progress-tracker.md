@@ -36,7 +36,9 @@ From now on, every completed implementation step must immediately update this fi
 - [x] Separate bot definitions from engine (`bots/` + base class)
   - Completed: 2026-02-10
   - Notes: Added `BaseBotStrategy`, `bots/ema_cross_atr.py`, strategy registry, and pipeline strategy selection.
-- [ ] Add robust IS/OOS walk-forward split logic
+- [x] Add robust IS/OOS walk-forward split logic
+  - Completed: 2026-02-11
+  - Notes: Added rolling walk-forward windows (60/20/20 IS/Validation/OOS) with aggregated degradation metrics in report output.
 - [x] Add per-market transaction cost profiles
   - Completed: 2026-02-10
   - Notes: Added fee/slippage profiles in `config/risk.json` and market-aware cost application in backtest reports.
@@ -73,11 +75,11 @@ From now on, every completed implementation step must immediately update this fi
 ## Active Task Board
 
 ### Now
-- [ ] Start M1.3: robust IS/OOS walk-forward split logic
+- [ ] Start M1.5: Backtrader parity validation
 
 ### Next
-- [ ] Start M1.5: Backtrader parity validation
 - [ ] Start M2.1: backend bootstrap (`api/`)
+- [ ] Start M2.4: frontend bootstrap (`web/`)
 
 ### Blocked / Decisions Needed
 - [ ] Finalize UI design system choice (minimal custom vs component library)
@@ -89,3 +91,5 @@ From now on, every completed implementation step must immediately update this fi
 - 2026-02-10: Completed strategy-engine separation with `bots/` and base class.
 - 2026-02-10: Completed per-market transaction cost profiles.
 - 2026-02-10: Added milestones for feedback-loop validation and strategy-by-strategy rollout.
+
+- 2026-02-11: Completed robust walk-forward IS/Validation/OOS logic.
