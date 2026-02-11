@@ -15,6 +15,10 @@
     "indices": {
       "symbols": ["US500", "NAS100", "GER40", "UK100", "JPN225", "AUS200"],
       "timeframes": ["5m", "15m", "1h"]
+    },
+    "commodities": {
+      "symbols": ["XAUUSD", "XAGUSD", "COPPER", "NATGAS"],
+      "timeframes": ["5m", "15m", "1h"]
     }
   },
   "source": {

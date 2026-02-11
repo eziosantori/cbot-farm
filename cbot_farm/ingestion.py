@@ -41,6 +41,14 @@ def map_instrument(symbol: str, market: Optional[str] = None) -> str:
     if mapped_index:
         return mapped_index
 
+    commodity_aliases = {
+        "COPPER": "coppercmdusd",
+        "NATGAS": "gascmdusd",
+    }
+    mapped_commodity = commodity_aliases.get(symbol.upper())
+    if mapped_commodity:
+        return mapped_commodity
+
     # Dukascopy equity instruments are usually <ticker>ususd.
     if market_key == "equities" and not normalized.endswith("ususd"):
         return f"{normalized}ususd"

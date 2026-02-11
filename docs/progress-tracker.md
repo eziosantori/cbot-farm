@@ -57,6 +57,19 @@ From now on, every completed implementation step must immediately update this fi
 - [ ] Add report schema versioning and migration helpers
 - [ ] Add smoke tests for API and UI routes
 
+### M4 - Feedback Loop Validation (Planned)
+- [ ] Define evaluation protocol for strategy iteration loop (inputs, gates, outputs)
+- [ ] Run controlled optimization campaign on S1 (`ema_cross_atr`) across selected markets
+- [ ] Measure loop quality (stability, convergence, OOS degradation trend)
+- [ ] Produce validation report and go/no-go criteria for scaling to other strategies
+
+### M5 - Strategy Rollout From Specs (Planned)
+- [ ] Implement S1 Trend EMA Breakout as production bot module
+- [ ] Implement S2 Mean Reversion Bollinger RSI as production bot module
+- [ ] Implement S3 Session Momentum as production bot module
+- [ ] Implement S4 Volatility Contraction Expansion as production bot module
+- [ ] Run baseline backtests for all S1-S4 and publish comparison table
+
 ## Active Task Board
 
 ### Now
@@ -74,5 +87,5 @@ From now on, every completed implementation step must immediately update this fi
 - 2026-02-10: Added Backtrader parity milestone step.
 - 2026-02-10: Completed ATR stop/take-profit + trade log task in M1.
 - 2026-02-10: Completed strategy-engine separation with `bots/` and base class.
-
 - 2026-02-10: Completed per-market transaction cost profiles.
+- 2026-02-10: Added milestones for feedback-loop validation and strategy-by-strategy rollout.
