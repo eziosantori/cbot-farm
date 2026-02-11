@@ -87,6 +87,31 @@ python3 scripts/verify_instruments.py
 
 Each ingestion run writes a manifest file to `reports/ingest/manifest_*.json`.
 
+## Optimization Parameter Space
+
+The cycle supports configurable parameter ranges per strategy (panel-ready model):
+
+- `enabled` (true/false)
+- `type` (`int` or `float`)
+- if enabled: `min`, `max`, `step`
+- if disabled: fixed `value`
+
+Current configuration lives in:
+
+- `/Users/esantori/Documents/cbot-farm/config/risk.json`
+  - `optimization.parameter_space.ema_cross_atr`
+
+Runtime behavior:
+
+- when parameter space is configured, iterations use generated candidates (grid/random mode);
+- when missing, fallback is strategy native sampling (`sample_params`).
+
+Each run report now includes:
+
+- `optimization.mode` (source, candidate index, counts, truncation)
+- `optimization.space` (effective parameter-space metadata)
+
+
 ## Dukascopy Source
 
 Data download is executed with `dukascopy-node`, using this command shape per symbol/timeframe:

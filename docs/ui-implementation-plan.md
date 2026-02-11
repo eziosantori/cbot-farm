@@ -14,6 +14,7 @@ with an architecture that can grow into broader operational tooling.
 - Dashboard view for ingestion manifests (table + status summary).
 - Run detail page with key metrics and raw payload preview.
 - Basic charts (return, drawdown, sharpe, OOS degradation).
+- Optimization parameter panel (strategy-level parameter space configuration).
 
 ## Proposed Architecture
 - Backend: `FastAPI` (Python) in `api/`.
@@ -29,6 +30,9 @@ with an architecture that can grow into broader operational tooling.
 - `GET /ingest-manifests`
   - query: `limit`, `offset`, `status`, `from`, `to`
 - `GET /ingest-manifests/{manifest_id}`
+- `GET /optimization/spaces/{strategy_id}`
+- `PUT /optimization/spaces/{strategy_id}`
+- `POST /optimization/preview/{strategy_id}` (optional dry-run: candidate count and first N combinations)
 
 ## Frontend Pages (Initial)
 - `/` dashboard overview
@@ -43,6 +47,24 @@ with an architecture that can grow into broader operational tooling.
 - `/ingestion/:manifestId`
   - summary cards
   - result table (ok/failed per symbol/timeframe)
+- `/optimization`
+  - strategy selector
+  - parameter table with controls:
+    - enable/disable
+    - min / max / step
+    - fixed value (when disabled)
+    - numeric type (int/float)
+  - preview candidate count
+  - save/apply config
+
+## Optimization Panel Model
+For each parameter:
+- `enabled`: bool
+- `type`: `int` or `float`
+- if `enabled=true`: `min`, `max`, `step`
+- if `enabled=false`: `value`
+
+This maps to the runtime parameter space used by the cycle engine.
 
 ## Milestones
 1. Project bootstrap (`api/` + `web/`).
@@ -50,8 +72,9 @@ with an architecture that can grow into broader operational tooling.
 3. Core API endpoints.
 4. Dashboard UI (runs + ingestion).
 5. Detail pages.
-6. Chart integration and UX polish.
-7. Optional SQLite index and pagination optimization.
+6. Optimization panel backend + UI.
+7. Chart integration and UX polish.
+8. Optional SQLite index and pagination optimization.
 
 ## Technical Decisions
 - Keep UI stateless on top of API-first design.
@@ -63,9 +86,11 @@ with an architecture that can grow into broader operational tooling.
 - JSON report schema may evolve: enforce versioning (`schema_version`) soon.
 - Large report volume will require indexing (SQLite) for performance.
 - Timezone handling should be explicit (UTC in API, localized in UI).
+- Parameter spaces can explode combinatorially; panel should show estimated combinations and caps.
 
 ## Definition of Done (Phase 1)
 - User can view latest runs and ingestion manifests from browser.
 - User can open run/manifest detail without using CLI.
 - Metrics/charts reflect actual report values.
+- User can configure optimization parameters (`enabled/min/max/step/value`) per strategy.
 - Error states are visible and understandable.

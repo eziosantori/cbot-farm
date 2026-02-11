@@ -8,6 +8,7 @@ from .backtest import run_real_backtest
 from .config import REPORTS_DIR, ROOT, load_configs
 from .ingestion import ingest_data
 from .optimization import evaluate_gates
+from .param_optimization import build_param_plan, params_for_iteration
 
 
 def run_cycle(
@@ -52,9 +53,11 @@ def run_cycle(
     best_score = float("-inf")
 
     data_root = ROOT / universe.get("ingestion", {}).get("output_dir", "data/dukascopy")
+    param_plan = build_param_plan(strategy_id=strategy.strategy_id, risk_cfg=risk)
 
     for iteration in range(1, iterations + 1):
-        params = strategy.sample_params(iteration)
+        sampled_params = strategy.sample_params(iteration)
+        params, optimization_meta = params_for_iteration(iteration, param_plan, sampled_params)
         metrics, bt_details = run_real_backtest(
             strategy=strategy,
             params=params,
@@ -83,6 +86,10 @@ def run_cycle(
             "market": markets_filter[0] if markets_filter and len(markets_filter) == 1 else "multi",
             "timeframes": timeframes_filter or ["5m", "15m", "1h"],
             "params": params,
+            "optimization": {
+                "mode": optimization_meta,
+                "space": param_plan.get("space", {}),
+            },
             "backtest": bt_details,
             "metrics": metrics.__dict__,
             "gates": gates,

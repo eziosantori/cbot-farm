@@ -8,7 +8,7 @@ From now on, every completed implementation step must immediately update this fi
 
 ## Project Status
 - Current phase: `M1 - Real Backtest Core (in progress)`
-- Last updated: `2026-02-10`
+- Last updated: `2026-02-11`
 
 ## Milestone Checklist
 
@@ -42,6 +42,9 @@ From now on, every completed implementation step must immediately update this fi
 - [x] Add per-market transaction cost profiles
   - Completed: 2026-02-10
   - Notes: Added fee/slippage profiles in `config/risk.json` and market-aware cost application in backtest reports.
+- [x] Add configurable optimization parameter space (`enabled/min/max/step/value`)
+  - Completed: 2026-02-11
+  - Notes: Added parameter-space engine and strategy config in `config/risk.json`; cycle now iterates candidates instead of simple incremental params.
 - [ ] Add Backtrader parity validation step (cross-check core strategy outputs)
 
 ### M2 - Web UI Phase 1 (Planned)
@@ -51,6 +54,7 @@ From now on, every completed implementation step must immediately update this fi
 - [ ] Bootstrap frontend (`React + Vite`) in `web/`
 - [ ] Build dashboard tables (runs + ingestion)
 - [ ] Build run/manifest detail pages
+- [ ] Build optimization parameter panel (`enabled/min/max/step/value`)
 - [ ] Add charts for key metrics
 
 ### M3 - Reliability and Scale (Planned)
@@ -91,5 +95,5 @@ From now on, every completed implementation step must immediately update this fi
 - 2026-02-10: Completed strategy-engine separation with `bots/` and base class.
 - 2026-02-10: Completed per-market transaction cost profiles.
 - 2026-02-10: Added milestones for feedback-loop validation and strategy-by-strategy rollout.
-
 - 2026-02-11: Completed robust walk-forward IS/Validation/OOS logic.
+- 2026-02-11: Added and completed configurable optimization parameter-space backend support.
