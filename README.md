@@ -28,6 +28,7 @@ Initial framework to design, test, and optimize simple strategies across multipl
 - `config/` instrument universe, timeframes, and risk constraints.
 - `data/dukascopy/` downloaded historical data.
 - `reports/` per-run JSON outputs.
+- `/Users/esantori/Documents/cbot-farm/docs/strategy-development-playbook.md` guide for building, testing, and promoting new strategies.
 
 ## Prerequisites
 
@@ -136,3 +137,10 @@ npm run verify:instruments
 
 For exact provider details and instrument coverage, refer to:
 [https://www.dukascopy-node.app/downloading-tick-data](https://www.dukascopy-node.app/downloading-tick-data)
+
+
+## Strategy Development Guide
+
+For a complete workflow to create new bots (with end-of-iteration logging and LLM prompt examples), use:
+
+- `/Users/esantori/Documents/cbot-farm/docs/strategy-development-playbook.md`

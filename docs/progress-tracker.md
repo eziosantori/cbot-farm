@@ -5,6 +5,7 @@ From now on, every completed implementation step must immediately update this fi
 - checking the task as complete (`[x]`)
 - adding completion date (YYYY-MM-DD)
 - adding a short outcome note
+- updating `/Users/esantori/Documents/cbot-farm/docs/strategy-development-playbook.md` (Iteration Log) when the step includes strategy development/backtest iterations
 
 ## Project Status
 - Current phase: `M1 - Real Backtest Core (in progress)`
@@ -13,6 +14,9 @@ From now on, every completed implementation step must immediately update this fi
 ## Milestone Checklist
 
 ### M0 - Foundations (Completed)
+- [x] Add strategy development playbook for new bots
+  - Completed: 2026-02-11
+  - Notes: Added end-to-end guide and LLM prompt templates in `docs/strategy-development-playbook.md`.
 - [x] Repository initialized and base docs created
   - Completed: 2026-02-10
   - Notes: Initial strategy/risk/opportunity docs in place.
@@ -97,3 +101,5 @@ From now on, every completed implementation step must immediately update this fi
 - 2026-02-10: Added milestones for feedback-loop validation and strategy-by-strategy rollout.
 - 2026-02-11: Completed robust walk-forward IS/Validation/OOS logic.
 - 2026-02-11: Added and completed configurable optimization parameter-space backend support.
+
+- 2026-02-11: Added strategy development playbook with iteration log workflow.
