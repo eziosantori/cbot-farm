@@ -2,10 +2,12 @@ from typing import Dict
 
 from bots.base import BaseBotStrategy
 from bots.ema_cross_atr import EmaCrossAtrBot
+from bots.supertrend_rsi import SuperTrendRsiBot
 
 
 REGISTRY = {
     EmaCrossAtrBot.strategy_id: EmaCrossAtrBot,
+    SuperTrendRsiBot.strategy_id: SuperTrendRsiBot,
 }
 
 

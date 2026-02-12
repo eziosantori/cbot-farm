@@ -159,6 +159,28 @@ Output:
 - Risk model:
 - Initial gates:
 
+### SuperTrend + RSI Momentum (Bot 2)
+- `strategy_id`: `supertrend_rsi`
+- Name: SuperTrend + RSI Momentum
+- Markets: Forex, Crypto, Indices, Equities, Commodities (all volatile markets)
+- Timeframes: 5m, 15m, 1h (optimal: 15m-1h)
+- Thesis: Capture breakout and momentum by combining trend direction (SuperTrend), momentum timing (RSI), trend strength filter (ADX), and directional bias (EMA). Avoid choppy markets and false breakouts.
+- Core indicators:
+  - SuperTrend (period: 8-14, mult: 2.0-4.0) - Trend direction + entry trigger on reversal
+  - RSI (period: 14) - Momentum filter (>50 for long, <50 for short)
+  - ADX (period: 14, min: 15-25) - Trend strength filter to avoid ranging markets
+  - EMA (period: 150-250) - Directional bias filter
+  - ATR (period: 14) - Dynamic stop/take sizing
+- Risk model:
+  - Stop Loss: Entry ± (ATR × 1.5-3.0)
+  - Take Profit: Entry ± (ATR × 2.0-5.0)
+  - Exit: SuperTrend reversal (hard exit) or SL/TP
+  - No breakeven in v1 (simplified)
+- Initial gates:
+  - Max Drawdown: ≤12% (strategy), ≤10% (portfolio)
+  - Min Sharpe: ≥1.2
+  - OOS Degradation: ≤30%
+
 ## Iteration Log
 
 ### Template (copy for each iteration)
@@ -190,3 +212,30 @@ Output:
 - Walk-forward summary: `enabled and included in backtest output`
 - Decision: `iterate`
 - Next action: `Backtrader parity validation (M1.5)`
+
+---
+
+## Iteration 1: SuperTrend + RSI Initial Validation
+- Iteration ID: `supertrend_rsi_validation_v1`
+- Date: `2026-02-12`
+- Strategy ID: `supertrend_rsi`
+- Market/Timeframe: `forex/EURUSD/1h, indices/NAS100/1h`
+- Data window: `2024-01-01 to 2024-02-15 (1080 bars EURUSD, NAS100 similar)`
+- Parameter set: `grid search from parameter_space.supertrend_rsi (5 iterations each)`
+- Key metrics:
+  - **EURUSD**: Return: -0.17% to -1.12%, Sharpe: -0.79 to -4.11, DD: 0.28-1.12%, Trades: 7, WinRate: 43%
+  - **NAS100**: Return: -6.12% to +0.16%, Sharpe: -1.57 to +0.07, DD: 2.61-7.83%, Trades: 37-63, WinRate: 30-52%
+  - Best config (NAS100 iter4): st_period=8, st_mult=2.5, ema=150, min_adx=20 → +0.16% return, 52% WR, 2.61% DD
+- Walk-forward summary:
+  - EURUSD: avg_oos_return -0.03%, 0% OOS positive windows, 100% degradation
+  - NAS100: avg_oos_degradation 87-180%, mostly negative OOS windows
+- Decision: `iterate`
+- Next action: 
+  - **Issue**: OOS degradation >100%, poor risk/reward (winners don't compensate losers)
+  - **Root cause**: Possible overfitting, insufficient TP/SL ratio optimization, or exit logic too aggressive (SuperTrend flip)
+  - **Proposed fixes**: 
+    1. Expand TP/SL multiplier ranges (test atr_mult_take up to 8-10x)
+    2. Relax filters (reduce min_adx min to 10, test without EMA filter)
+    3. Test on more volatile periods or additional symbols
+    4. Consider alternative exit: partial SuperTrend flip (allow re-entry) vs hard exit
+  - **Next iteration**: Run 20-50 iterations on NAS100 1h with expanded parameter space focusing on risk/reward optimization
