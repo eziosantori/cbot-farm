@@ -134,26 +134,8 @@ class SuperTrendRsiBot(BaseBotStrategy):
         bars: List[Dict[str, float]],
         indicators: dict,
     ) -> bool:
-        # Exit when SuperTrend reverses (hard exit on trend change)
-        # This is the primary exit mechanism for this strategy
-        
-        st_up = indicators["st_up"]
-        st_down = indicators["st_down"]
-        
-        curr_up = st_up[i]
-        curr_down = st_down[i]
-        
-        if curr_up is None and curr_down is None:
-            return False
-        
-        # Long position but SuperTrend switched to downtrend
-        if position == 1 and curr_down is not None:
-            return True
-        
-        # Short position but SuperTrend switched to uptrend
-        if position == -1 and curr_up is not None:
-            return True
-        
+        # Disable hard exit on SuperTrend reversal to allow SL/TP to manage exits
+        # This prevents premature exits and allows better RR realization
         return False
 
     def risk_levels(

@@ -8,8 +8,8 @@ From now on, every completed implementation step must immediately update this fi
 - updating `/Users/esantori/Documents/cbot-farm/docs/strategy-development-playbook.md` (Iteration Log) when the step includes strategy development/backtest iterations
 
 ## Project Status
-- Current phase: `M1 - Real Backtest Core (in progress)`
-- Last updated: `2026-02-11`
+- Current phase: `M2 - Web UI Phase 1 (ready to start)`
+- Last updated: `2026-02-16`
 
 ## Milestone Checklist
 
@@ -49,7 +49,9 @@ From now on, every completed implementation step must immediately update this fi
 - [x] Add configurable optimization parameter space (`enabled/min/max/step/value`)
   - Completed: 2026-02-11
   - Notes: Added parameter-space engine and strategy config in `config/risk.json`; cycle now iterates candidates instead of simple incremental params.
-- [ ] Add Backtrader parity validation step (cross-check core strategy outputs)
+- [x] Add Backtrader parity validation step (cross-check core strategy outputs)
+  - Completed: 2026-02-16
+  - Notes: Added `scripts/backtrader_parity.py` with strict + directional parity statuses; latest run reported `directional_pass` for EMA Cross ATR on EURUSD 1h.
 
 ### M2 - Web UI Phase 1 (Planned)
 - [ ] Bootstrap backend (`FastAPI`) in `api/`
@@ -83,11 +85,11 @@ From now on, every completed implementation step must immediately update this fi
 ## Active Task Board
 
 ### Now
-- [ ] Start M1.5: Backtrader parity validation
+- [ ] Start M2.1: backend bootstrap (`api/`)
 
 ### Next
-- [ ] Start M2.1: backend bootstrap (`api/`)
 - [ ] Start M2.4: frontend bootstrap (`web/`)
+- [ ] Start M2.2: report reader service (`runs`, `ingest`)
 
 ### Blocked / Decisions Needed
 - [ ] Finalize UI design system choice (minimal custom vs component library)
@@ -103,3 +105,5 @@ From now on, every completed implementation step must immediately update this fi
 - 2026-02-11: Added and completed configurable optimization parameter-space backend support.
 
 - 2026-02-11: Added strategy development playbook with iteration log workflow.
+
+- 2026-02-16: Completed Backtrader parity validation baseline (strict + directional).

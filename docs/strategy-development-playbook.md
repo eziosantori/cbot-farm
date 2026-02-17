@@ -239,3 +239,22 @@ Output:
     3. Test on more volatile periods or additional symbols
     4. Consider alternative exit: partial SuperTrend flip (allow re-entry) vs hard exit
   - **Next iteration**: Run 20-50 iterations on NAS100 1h with expanded parameter space focusing on risk/reward optimization
+
+
+## Iteration 2: Backtrader Parity Baseline (M1.5)
+- Iteration ID: `ema_cross_atr_backtrader_parity_v1`
+- Date: `2026-02-16`
+- Strategy ID: `ema_cross_atr`
+- Market/Timeframe: `forex/EURUSD/1h`
+- Data window: `2022-01-01 to 2024-12-31`
+- Parameter set: `candidate 0 from optimization.parameter_space.ema_cross_atr`
+- Key metrics:
+  - Engine: Return -24.76%, Sharpe -4.07, Max DD 25.02%, OOS degradation 100%
+  - Backtrader: Return -15.49%, Sharpe -2.14, Max DD 15.74%, OOS degradation 100%
+  - Trade count ratio: 0.8458
+- Walk-forward summary: `engine walk-forward enabled; parity script compares aggregate outputs`
+- Decision: `iterate`
+- Next action:
+  - Keep `strict` parity as hard gate for future engine alignment work
+  - Use `directional` parity as baseline validation gate in current phase
+  - Proceed with M2 UI/API implementation and expose parity status in dashboard
