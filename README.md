@@ -32,6 +32,7 @@ Initial framework to design, test, and optimize simple strategies across multipl
 - `reports/` per-run JSON outputs.
 - `/Users/esantori/Documents/cbot-farm/docs/strategy-development-playbook.md` guide for building, testing, and promoting new strategies.
 - `cbot-farm/docs/autonomous-strategy-lab-v1.md` blueprint for autonomous LLM-driven strategy loops and multi-platform export.
+- `/Users/esantori/Documents/cbot-farm/docs/system-flows.md` Mermaid flows for lifecycle, autonomous loop, and export pipeline.
 
 ## Prerequisites
 
@@ -86,6 +87,9 @@ npm run cycle:no-ingest
 # Basic python syntax check
 npm run check
 
+# Run unit tests (Python business logic)
+npm run test:unit
+
 # Validate all configured symbols against Dukascopy
 npm run verify:instruments
 
@@ -97,6 +101,9 @@ npm run web:dev
 
 # Type-check TypeScript web app
 npm run web:typecheck
+
+# Full quality gate (checks + tests + web build)
+npm run check:all
 ```
 
 ## Direct Python Commands
@@ -174,6 +181,7 @@ Web routes (current phase):
 - `/` dashboard overview
 - `/runs/:runId` run detail page
 - `/ingestion/:manifestId` ingest manifest detail page
+- `/optimization` optimization parameter panel
 
 
 ## Campaign APIs

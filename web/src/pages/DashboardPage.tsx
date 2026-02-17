@@ -13,7 +13,7 @@ export default function DashboardPage(): JSX.Element {
     <main>
       <header>
         <h1>cbot-farm dashboard</h1>
-        <p>Runs and ingestion overview.</p>
+        <p>Runs and ingestion overview. <Link to="/optimization">Open optimization panel</Link></p>
       </header>
 
       <section className="kpis">

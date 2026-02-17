@@ -19,11 +19,7 @@ export function useFetch<T>(path: string): FetchState<T> {
     async function run(): Promise<void> {
       setLoading(true)
       try {
-        const res = await fetch(`${API_BASE}${path}`)
-        if (!res.ok) {
-          throw new Error(`${path} failed with status ${res.status}`)
-        }
-        const payload = (await res.json()) as T
+        const payload = await apiRequest<T>(path)
         if (mounted) {
           setData(payload)
           setError('')
@@ -46,4 +42,23 @@ export function useFetch<T>(path: string): FetchState<T> {
   }, [path])
 
   return { data, error, loading }
+}
+
+export async function apiRequest<T>(
+  path: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options.headers || {})
+    },
+    ...options
+  })
+
+  if (!res.ok) {
+    throw new Error(`${path} failed with status ${res.status}`)
+  }
+
+  return (await res.json()) as T
 }

@@ -7,6 +7,7 @@ from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.campaigns import CampaignOrchestrator, CampaignStore
+from api.optimization import OptimizationService
 from api.report_reader import ReportReader
 
 
@@ -14,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 reader = ReportReader(reports_root=ROOT / "reports")
 campaign_store = CampaignStore(campaigns_root=ROOT / "reports" / "campaigns")
 orchestrator = CampaignOrchestrator(store=campaign_store)
+optimization_service = OptimizationService(risk_config_path=ROOT / "config" / "risk.json")
 
 app = FastAPI(title="cbot-farm API", version="0.2.0")
 app.add_middleware(
@@ -63,6 +65,41 @@ def ingest_manifest_detail(manifest_id: str) -> Dict[str, Any]:
         return reader.get_ingest_manifest(manifest_id=manifest_id)
     except FileNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.get("/optimization/spaces")
+def list_optimization_spaces() -> Dict[str, Any]:
+    return optimization_service.list_spaces()
+
+
+@app.get("/optimization/spaces/{strategy_id}")
+def get_optimization_space(strategy_id: str) -> Dict[str, Any]:
+    try:
+        return optimization_service.get_space(strategy_id=strategy_id)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.put("/optimization/spaces/{strategy_id}")
+def update_optimization_space(
+    strategy_id: str,
+    payload: Dict[str, Any] = Body(default_factory=dict),
+) -> Dict[str, Any]:
+    try:
+        return optimization_service.update_space(strategy_id=strategy_id, space_payload=payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/optimization/preview/{strategy_id}")
+def preview_optimization_space(
+    strategy_id: str,
+    payload: Optional[Dict[str, Any]] = Body(default=None),
+) -> Dict[str, Any]:
+    try:
+        return optimization_service.preview_space(strategy_id=strategy_id, override_payload=payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @app.post("/campaigns")

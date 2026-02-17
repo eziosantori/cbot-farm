@@ -1,4 +1,8 @@
-export type JsonRecord = Record<string, unknown>
+export type JsonPrimitive = string | number | boolean | null
+export interface JsonRecord {
+  [key: string]: JsonValue
+}
+export type JsonValue = JsonPrimitive | JsonRecord | JsonValue[]
 
 export type ListResponse<T> = {
   total: number
@@ -49,4 +53,56 @@ export type TableColumn<T> = {
   key: string
   label: string
   render?: (row: T) => React.ReactNode
+}
+
+export type OptimizationParam = {
+  enabled: boolean
+  type: 'int' | 'float'
+  min?: number
+  max?: number
+  step?: number
+  value?: number
+}
+
+export type OptimizationSpace = {
+  search_mode: 'grid' | 'random'
+  max_combinations: number
+  shuffle?: boolean
+  seed?: number
+  parameters: Record<string, OptimizationParam>
+}
+
+export type OptimizationSpacePreview = {
+  strategy_id: string
+  source: string
+  search_mode: string
+  total_candidates: number
+  raw_total_candidates: number
+  truncated: boolean
+  space_summary: JsonRecord
+  sample_candidates: JsonRecord[]
+}
+
+export type OptimizationSpaceDetail = {
+  strategy_id: string
+  space: OptimizationSpace
+  preview: {
+    total_candidates: number
+    raw_total_candidates: number
+    truncated: boolean
+    search_mode: string
+    source: string
+    space_summary: JsonRecord
+  }
+}
+
+export type OptimizationSpaceList = {
+  total: number
+  items: Array<{
+    strategy_id: string
+    parameters_total: number
+    parameters_enabled: number
+    search_mode: string
+    max_combinations: number
+  }>
 }

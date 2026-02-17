@@ -2,10 +2,22 @@
 
 ## Update Rule
 From now on, every completed implementation step must immediately update this file by:
+- ensuring unit tests for touched business logic are added/updated where applicable
+- ensuring unit tests are passing before marking the step complete
 - checking the task as complete (`[x]`)
 - adding completion date (YYYY-MM-DD)
 - adding a short outcome note
 - updating `/Users/esantori/Documents/cbot-farm/docs/strategy-development-playbook.md` (Iteration Log) when the step includes strategy development/backtest iterations
+
+
+## Definition of Done Rule
+A step can be marked as completed only if:
+- implementation is merged in workspace
+- relevant checks pass
+- unit tests that provide business value are present and green (where applicable)
+
+Recommended command:
+- `npm run test:unit`
 
 ## Project Status
 - Current phase: `M2 - Web UI Phase 1 (in progress)`
@@ -72,7 +84,9 @@ From now on, every completed implementation step must immediately update this fi
 - [x] Build run/manifest detail pages
   - Completed: 2026-02-17
   - Notes: Added routed detail pages in `web/src/pages/RunDetailPage.tsx` and `web/src/pages/ManifestDetailPage.tsx`.
-- [ ] Build optimization parameter panel (`enabled/min/max/step/value`)
+- [x] Build optimization parameter panel (`enabled/min/max/step/value`)
+  - Completed: 2026-02-17
+  - Notes: Added optimization API endpoints and `/optimization` TypeScript UI page with preview/save flow over `config/risk.json`.
 - [ ] Add charts for key metrics
 - [x] Migrate web frontend from JavaScript to TypeScript
   - Completed: 2026-02-17
@@ -105,12 +119,12 @@ From now on, every completed implementation step must immediately update this fi
 ## Active Task Board
 
 ### Now
-- [ ] Start M2.6: optimization parameter panel (`enabled/min/max/step/value`)
+- [ ] Start M2.7: charts for key metrics
 
 ### Next
-- [ ] Start M2.7: charts for key metrics
 - [ ] Start M3.1: SQLite report index
 - [ ] Start M4.3: evaluator/critic loop integration
+- [ ] Start M4.4: controlled pilot campaign on S1 (`ema_cross_atr`)
 
 ### Blocked / Decisions Needed
 - [ ] Finalize UI design system choice (minimal custom vs component library)
@@ -136,3 +150,7 @@ From now on, every completed implementation step must immediately update this fi
 - 2026-02-17: Added M4 autonomous strategy lab blueprint and protocol.
 
 - 2026-02-17: Implemented M4.2 orchestrator v1 and campaign persistence APIs.
+
+- 2026-02-17: Enforced unit-test quality gate for step completion.
+
+- 2026-02-17: Completed M2.6 optimization parameter panel (API + UI).
