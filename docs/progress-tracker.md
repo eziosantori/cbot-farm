@@ -8,8 +8,8 @@ From now on, every completed implementation step must immediately update this fi
 - updating `/Users/esantori/Documents/cbot-farm/docs/strategy-development-playbook.md` (Iteration Log) when the step includes strategy development/backtest iterations
 
 ## Project Status
-- Current phase: `M2 - Web UI Phase 1 (ready to start)`
-- Last updated: `2026-02-16`
+- Current phase: `M2 - Web UI Phase 1 (in progress)`
+- Last updated: `2026-02-17`
 
 ## Milestone Checklist
 
@@ -53,15 +53,30 @@ From now on, every completed implementation step must immediately update this fi
   - Completed: 2026-02-16
   - Notes: Added `scripts/backtrader_parity.py` with strict + directional parity statuses; latest run reported `directional_pass` for EMA Cross ATR on EURUSD 1h.
 
-### M2 - Web UI Phase 1 (Planned)
-- [ ] Bootstrap backend (`FastAPI`) in `api/`
-- [ ] Implement report reader service (`reports`, `ingest`)
-- [ ] Implement API endpoints (`/runs`, `/ingest-manifests`, details)
-- [ ] Bootstrap frontend (`React + Vite`) in `web/`
-- [ ] Build dashboard tables (runs + ingestion)
-- [ ] Build run/manifest detail pages
+### M2 - Web UI Phase 1 (In Progress)
+- [x] Bootstrap backend (`FastAPI`) in `api/`
+  - Completed: 2026-02-17
+  - Notes: Added `api/main.py` with base FastAPI app and health endpoint.
+- [x] Implement report reader service (`reports`, `ingest`)
+  - Completed: 2026-02-17
+  - Notes: Added `api/report_reader.py` for run and manifest listing/detail reads from filesystem JSON.
+- [x] Implement API endpoints (`/runs`, `/ingest-manifests`, details)
+  - Completed: 2026-02-17
+  - Notes: Exposed `/runs`, `/runs/{run_id}`, `/ingest-manifests`, `/ingest-manifests/{manifest_id}` with pagination filters.
+- [x] Bootstrap frontend (`React + Vite`) in `web/`
+  - Completed: 2026-02-17
+  - Notes: Added `web/` app with dashboard skeleton and API consumption for runs/manifests.
+- [x] Build dashboard tables (runs + ingestion)
+  - Completed: 2026-02-17
+  - Notes: Added initial dashboard table rendering in `web/src/pages/DashboardPage.tsx` for latest runs and ingest manifests.
+- [x] Build run/manifest detail pages
+  - Completed: 2026-02-17
+  - Notes: Added routed detail pages in `web/src/pages/RunDetailPage.tsx` and `web/src/pages/ManifestDetailPage.tsx`.
 - [ ] Build optimization parameter panel (`enabled/min/max/step/value`)
 - [ ] Add charts for key metrics
+- [x] Migrate web frontend from JavaScript to TypeScript
+  - Completed: 2026-02-17
+  - Notes: Converted `web/src` to `.ts/.tsx`, added TS config and typecheck script, and validated build + routing pages.
 
 ### M3 - Reliability and Scale (Planned)
 - [ ] Introduce SQLite index for reports
@@ -70,7 +85,9 @@ From now on, every completed implementation step must immediately update this fi
 - [ ] Add smoke tests for API and UI routes
 
 ### M4 - Feedback Loop Validation (Planned)
-- [ ] Define evaluation protocol for strategy iteration loop (inputs, gates, outputs)
+- [x] Define evaluation protocol for strategy iteration loop (inputs, gates, outputs)
+  - Completed: 2026-02-17
+  - Notes: Added `docs/autonomous-strategy-lab-v1.md` with architecture, state machine, stop criteria, and artifact/API blueprint.
 - [ ] Run controlled optimization campaign on S1 (`ema_cross_atr`) across selected markets
 - [ ] Measure loop quality (stability, convergence, OOS degradation trend)
 - [ ] Produce validation report and go/no-go criteria for scaling to other strategies
@@ -85,11 +102,12 @@ From now on, every completed implementation step must immediately update this fi
 ## Active Task Board
 
 ### Now
-- [ ] Start M2.1: backend bootstrap (`api/`)
+- [ ] Start M2.6: optimization parameter panel (`enabled/min/max/step/value`)
 
 ### Next
-- [ ] Start M2.4: frontend bootstrap (`web/`)
-- [ ] Start M2.2: report reader service (`runs`, `ingest`)
+- [ ] Start M2.7: charts for key metrics
+- [ ] Start M3.1: SQLite report index
+- [ ] Start M4.2: orchestrator v1 and campaign persistence
 
 ### Blocked / Decisions Needed
 - [ ] Finalize UI design system choice (minimal custom vs component library)
@@ -107,3 +125,9 @@ From now on, every completed implementation step must immediately update this fi
 - 2026-02-11: Added strategy development playbook with iteration log workflow.
 
 - 2026-02-16: Completed Backtrader parity validation baseline (strict + directional).
+
+- 2026-02-17: Bootstrapped monorepo UI/API layout with FastAPI + React/Vite.
+
+- 2026-02-17: Migrated web app to TypeScript with typed API hooks/components.
+
+- 2026-02-17: Added M4 autonomous strategy lab blueprint and protocol.

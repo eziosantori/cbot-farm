@@ -14,7 +14,14 @@
     "check": "python3 -m py_compile scripts/run_cycle.py bots/*.py cbot_farm/*.py",
     "verify:instruments": "python3 scripts/verify_instruments.py",
     "list:strategies": "python3 -m cbot_farm.cli --list-strategies",
-    "parity:backtrader": "python3 scripts/backtrader_parity.py --strategy ema_cross_atr --market forex --symbol EURUSD --timeframe 1h --iteration 1"
+    "parity:backtrader": "python3 scripts/backtrader_parity.py --strategy ema_cross_atr --market forex --symbol EURUSD --timeframe 1h --iteration 1",
+    "api:install": "python3 -m pip install -r api/requirements.txt",
+    "api:dev": "python3 -m uvicorn api.main:app --reload --port 8000",
+    "api:check": "python3 -m py_compile api/*.py",
+    "web:install": "npm --prefix web install",
+    "web:dev": "npm --prefix web run dev",
+    "web:build": "npm --prefix web run build",
+    "web:typecheck": "npm --prefix web run typecheck"
   },
   "engines": {
     "node": ">=18"

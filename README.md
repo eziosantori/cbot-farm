@@ -25,10 +25,13 @@ Initial framework to design, test, and optimize simple strategies across multipl
   - `config.py` configuration loading.
 - `scripts/run_cycle.py` compatibility launcher.
 - `scripts/verify_instruments.py` instrument validation utility.
+- `api/` FastAPI backend (report read APIs).
+- `web/` React + Vite + TypeScript dashboard (Phase 1).
 - `config/` instrument universe, timeframes, and risk constraints.
 - `data/dukascopy/` downloaded historical data.
 - `reports/` per-run JSON outputs.
 - `/Users/esantori/Documents/cbot-farm/docs/strategy-development-playbook.md` guide for building, testing, and promoting new strategies.
+- `cbot-farm/docs/autonomous-strategy-lab-v1.md` blueprint for autonomous LLM-driven strategy loops and multi-platform export.
 
 ## Prerequisites
 
@@ -41,6 +44,16 @@ Initial framework to design, test, and optimize simple strategies across multipl
 python3 -m venv .venv
 source .venv/bin/activate
 npm run cycle
+
+# Bootstrap API + Web
+npm run api:install
+npm run web:install
+
+# Terminal 1
+npm run api:dev
+
+# Terminal 2
+npm run web:dev
 ```
 
 ## npm Scripts
@@ -75,6 +88,15 @@ npm run check
 
 # Validate all configured symbols against Dukascopy
 npm run verify:instruments
+
+# Run API server (FastAPI)
+npm run api:dev
+
+# Run web dashboard (Vite)
+npm run web:dev
+
+# Type-check TypeScript web app
+npm run web:typecheck
 ```
 
 ## Direct Python Commands
@@ -99,7 +121,7 @@ The cycle supports configurable parameter ranges per strategy (panel-ready model
 
 Current configuration lives in:
 
-- `/Users/esantori/Documents/cbot-farm/config/risk.json`
+- `/cbot-farm/config/risk.json`
   - `optimization.parameter_space.ema_cross_atr`
 
 Runtime behavior:
@@ -143,4 +165,12 @@ For exact provider details and instrument coverage, refer to:
 
 For a complete workflow to create new bots (with end-of-iteration logging and LLM prompt examples), use:
 
-- `/Users/esantori/Documents/cbot-farm/docs/strategy-development-playbook.md`
+- `/cbot-farm/docs/strategy-development-playbook.md`
+
+
+## Web Routes
+
+Web routes (current phase):
+- `/` dashboard overview
+- `/runs/:runId` run detail page
+- `/ingestion/:manifestId` ingest manifest detail page

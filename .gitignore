@@ -9,3 +9,7 @@ data/
 download/
 .dukascopy-cache/
 bots/study/*
+web/node_modules/
+web/dist/
+api/__pycache__/
+.pytest_cache/
