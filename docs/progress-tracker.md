@@ -87,7 +87,9 @@ Recommended command:
 - [x] Build optimization parameter panel (`enabled/min/max/step/value`)
   - Completed: 2026-02-17
   - Notes: Added optimization API endpoints and `/optimization` TypeScript UI page with preview/save flow over `config/risk.json`.
-- [ ] Add charts for key metrics
+- [x] Add charts for key metrics
+  - Completed: 2026-02-17
+  - Notes: Added dashboard trend chart and run-detail metric bar chart in `web/src/components/MetricsChart.tsx` and integrated into pages.
 - [x] Migrate web frontend from JavaScript to TypeScript
   - Completed: 2026-02-17
   - Notes: Converted `web/src` to `.ts/.tsx`, added TS config and typecheck script, and validated build + routing pages.
@@ -119,12 +121,12 @@ Recommended command:
 ## Active Task Board
 
 ### Now
-- [ ] Start M2.7: charts for key metrics
+- [ ] Start M3.1: SQLite report index
 
 ### Next
-- [ ] Start M3.1: SQLite report index
 - [ ] Start M4.3: evaluator/critic loop integration
 - [ ] Start M4.4: controlled pilot campaign on S1 (`ema_cross_atr`)
+- [ ] Start M2.8: dashboard filtering and pagination UX
 
 ### Blocked / Decisions Needed
 - [ ] Finalize UI design system choice (minimal custom vs component library)
@@ -154,3 +156,5 @@ Recommended command:
 - 2026-02-17: Enforced unit-test quality gate for step completion.
 
 - 2026-02-17: Completed M2.6 optimization parameter panel (API + UI).
+
+- 2026-02-17: Completed M2.7 key metrics charts in web UI.

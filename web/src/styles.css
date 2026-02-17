@@ -71,7 +71,6 @@ th {
   color: #b91c1c;
 }
 
-
 .form-grid {
   display: grid;
   gap: 10px;
@@ -106,4 +105,76 @@ pre {
   color: #e2e8f0;
   border-radius: 8px;
   padding: 12px;
+}
+
+.bar-chart {
+  display: grid;
+  gap: 10px;
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 80px;
+  align-items: center;
+  gap: 8px;
+}
+
+.bar-label,
+.bar-value {
+  font-size: 0.85rem;
+  color: #334155;
+}
+
+.bar-track {
+  width: 100%;
+  height: 10px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.bar-positive {
+  background: linear-gradient(90deg, #16a34a, #22c55e);
+}
+
+.bar-negative {
+  background: linear-gradient(90deg, #dc2626, #f87171);
+}
+
+.trend-chart {
+  width: 100%;
+  height: auto;
+  border: 1px solid #dbe6ff;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+}
+
+.trend-axis {
+  stroke: #cbd5e1;
+  stroke-width: 1;
+}
+
+.trend-line {
+  fill: none;
+  stroke: #2563eb;
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.trend-point {
+  fill: #2563eb;
+}
+
+.trend-legend {
+  margin-top: 8px;
+  display: flex;
+  gap: 14px;
+  color: #475569;
+  font-size: 0.85rem;
 }

@@ -200,3 +200,10 @@ Campaign APIs (M4.2 baseline):
 
 Campaign persistence root:
 - `/Users/esantori/Documents/cbot-farm/reports/campaigns`
+
+
+## UI Charts
+
+Current charting features:
+- Performance trend chart (latest runs) on dashboard.
+- Run-level key metrics bar chart on run detail page.

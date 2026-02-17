@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 
 import { useFetch } from '../api'
+import { MetricBarChart } from '../components/MetricsChart'
 import type { JsonRecord, RunDetailResponse } from '../types'
 
 function MetricGrid({ metrics }: { metrics: JsonRecord }): JSX.Element {
@@ -19,6 +20,17 @@ function MetricGrid({ metrics }: { metrics: JsonRecord }): JSX.Element {
       ))}
     </div>
   )
+}
+
+function numericValue(raw: unknown): number | null {
+  if (typeof raw === 'number') {
+    return raw
+  }
+  if (typeof raw === 'string') {
+    const parsed = Number(raw)
+    return Number.isFinite(parsed) ? parsed : null
+  }
+  return null
 }
 
 export default function RunDetailPage(): JSX.Element {
@@ -53,6 +65,15 @@ export default function RunDetailPage(): JSX.Element {
       (backtest.metrics as JsonRecord | undefined) ||
       {}) as JsonRecord
 
+  const chartPoints = [
+    { label: 'return %', value: numericValue(metrics.total_return_pct) },
+    { label: 'sharpe', value: numericValue(metrics.sharpe) },
+    { label: 'max DD %', value: numericValue(metrics.max_drawdown_pct) },
+    { label: 'oos degr %', value: numericValue(metrics.oos_degradation_pct) },
+  ]
+    .filter((p): p is { label: string; value: number } => p.value !== null)
+    .map((p) => ({ label: p.label, value: p.value }))
+
   return (
     <main>
       <header>
@@ -65,6 +86,15 @@ export default function RunDetailPage(): JSX.Element {
       <section>
         <h2>Key metrics</h2>
         <MetricGrid metrics={metrics} />
+      </section>
+
+      <section>
+        <h2>Charts</h2>
+        {chartPoints.length ? (
+          <MetricBarChart title="Run metric distribution" points={chartPoints} />
+        ) : (
+          <p>No chartable metrics found.</p>
+        )}
       </section>
 
       <section>

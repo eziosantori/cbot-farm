@@ -1,19 +1,48 @@
 import { Link } from 'react-router-dom'
 
 import { useFetch } from '../api'
+import { TrendChart } from '../components/MetricsChart'
 import Table from '../components/Table'
-import type { HealthResponse, ListResponse, ManifestItem, RunItem } from '../types'
+import type { HealthResponse, JsonRecord, ListResponse, ManifestItem, RunItem } from '../types'
+
+function numMetric(metrics: JsonRecord | undefined, key: string): number | null {
+  const raw = metrics?.[key]
+  if (typeof raw === 'number') {
+    return raw
+  }
+  if (typeof raw === 'string') {
+    const parsed = Number(raw)
+    return Number.isFinite(parsed) ? parsed : null
+  }
+  return null
+}
 
 export default function DashboardPage(): JSX.Element {
   const health = useFetch<HealthResponse>('/health')
   const runs = useFetch<ListResponse<RunItem>>('/runs?limit=10')
   const manifests = useFetch<ListResponse<ManifestItem>>('/ingest-manifests?limit=10')
 
+  const trendPoints = (runs.data?.items || [])
+    .map((row, idx) => {
+      const ret = numMetric(row.metrics, 'total_return_pct')
+      if (ret === null) {
+        return null
+      }
+      return {
+        label: row.run_id || `run-${idx + 1}`,
+        value: ret,
+      }
+    })
+    .filter((v): v is { label: string; value: number } => v !== null)
+    .reverse()
+
   return (
     <main>
       <header>
         <h1>cbot-farm dashboard</h1>
-        <p>Runs and ingestion overview. <Link to="/optimization">Open optimization panel</Link></p>
+        <p>
+          Runs and ingestion overview. <Link to="/optimization">Open optimization panel</Link>
+        </p>
       </header>
 
       <section className="kpis">
@@ -32,6 +61,15 @@ export default function DashboardPage(): JSX.Element {
       </section>
 
       <section>
+        <h2>Performance trend (latest runs)</h2>
+        {trendPoints.length >= 2 ? (
+          <TrendChart title="Total return % trend" points={trendPoints} />
+        ) : (
+          <p>No trend data available yet.</p>
+        )}
+      </section>
+
+      <section>
         <h2>Latest runs</h2>
         {runs.error ? <p className="error">{runs.error}</p> : null}
         <Table<RunItem>
@@ -39,14 +77,14 @@ export default function DashboardPage(): JSX.Element {
             {
               key: 'run_id',
               label: 'Run ID',
-              render: (row) => <Link to={`/runs/${row.run_id}`}>{row.run_id}</Link>
+              render: (row) => <Link to={`/runs/${row.run_id}`}>{row.run_id}</Link>,
             },
             { key: 'run_at', label: 'Date' },
             { key: 'strategy_id', label: 'Strategy' },
             { key: 'market', label: 'Market' },
             { key: 'symbol', label: 'Symbol' },
             { key: 'timeframe', label: 'TF' },
-            { key: 'status', label: 'Status' }
+            { key: 'status', label: 'Status' },
           ]}
           rows={runs.data?.items || []}
         />
@@ -62,13 +100,13 @@ export default function DashboardPage(): JSX.Element {
               label: 'Manifest ID',
               render: (row) => (
                 <Link to={`/ingestion/${row.manifest_id}`}>{row.manifest_id}</Link>
-              )
+              ),
             },
             { key: 'created_at', label: 'Date' },
             { key: 'status', label: 'Status' },
             { key: 'rows', label: 'Rows' },
             { key: 'ok', label: 'OK' },
-            { key: 'failed', label: 'Failed' }
+            { key: 'failed', label: 'Failed' },
           ]}
           rows={manifests.data?.items || []}
         />
