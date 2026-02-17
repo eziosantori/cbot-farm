@@ -88,6 +88,9 @@ From now on, every completed implementation step must immediately update this fi
 - [x] Define evaluation protocol for strategy iteration loop (inputs, gates, outputs)
   - Completed: 2026-02-17
   - Notes: Added `docs/autonomous-strategy-lab-v1.md` with architecture, state machine, stop criteria, and artifact/API blueprint.
+- [x] Implement orchestrator v1 and campaign persistence
+  - Completed: 2026-02-17
+  - Notes: Added `api/campaigns.py` and new campaign APIs (`/campaigns`, state actions, iterations, artifacts, export request stub).
 - [ ] Run controlled optimization campaign on S1 (`ema_cross_atr`) across selected markets
 - [ ] Measure loop quality (stability, convergence, OOS degradation trend)
 - [ ] Produce validation report and go/no-go criteria for scaling to other strategies
@@ -107,7 +110,7 @@ From now on, every completed implementation step must immediately update this fi
 ### Next
 - [ ] Start M2.7: charts for key metrics
 - [ ] Start M3.1: SQLite report index
-- [ ] Start M4.2: orchestrator v1 and campaign persistence
+- [ ] Start M4.3: evaluator/critic loop integration
 
 ### Blocked / Decisions Needed
 - [ ] Finalize UI design system choice (minimal custom vs component library)
@@ -131,3 +134,5 @@ From now on, every completed implementation step must immediately update this fi
 - 2026-02-17: Migrated web app to TypeScript with typed API hooks/components.
 
 - 2026-02-17: Added M4 autonomous strategy lab blueprint and protocol.
+
+- 2026-02-17: Implemented M4.2 orchestrator v1 and campaign persistence APIs.

@@ -174,3 +174,21 @@ Web routes (current phase):
 - `/` dashboard overview
 - `/runs/:runId` run detail page
 - `/ingestion/:manifestId` ingest manifest detail page
+
+
+## Campaign APIs
+
+Campaign APIs (M4.2 baseline):
+- `POST /campaigns`
+- `GET /campaigns`
+- `GET /campaigns/:campaignId`
+- `POST /campaigns/:campaignId/pause`
+- `POST /campaigns/:campaignId/resume`
+- `POST /campaigns/:campaignId/cancel`
+- `GET /campaigns/:campaignId/iterations`
+- `POST /campaigns/:campaignId/iterations` (iteration stub)
+- `GET /campaigns/:campaignId/artifacts`
+- `POST /export/:campaignId/:target` (`ctrader`, `pine`)
+
+Campaign persistence root:
+- `/Users/esantori/Documents/cbot-farm/reports/campaigns`
