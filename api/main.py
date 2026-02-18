@@ -198,6 +198,75 @@ def create_iteration_stub(campaign_id: str, payload: Dict[str, Any] = Body(defau
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
+@app.post("/campaigns/{campaign_id}/evaluate")
+def evaluate_campaign_iteration(
+    campaign_id: str,
+    payload: Dict[str, Any] = Body(default_factory=dict),
+) -> Dict[str, Any]:
+    iteration_id = payload.get("iteration_id")
+    metrics = payload.get("metrics")
+    notes = str(payload.get("notes", ""))
+    summary = str(payload.get("summary", ""))
+
+    if not isinstance(metrics, dict):
+        raise HTTPException(status_code=400, detail="metrics payload is required")
+
+    try:
+        if not iteration_id:
+            created = orchestrator.register_iteration_stub(campaign_id=campaign_id, summary=summary)
+            iteration_id = created["iteration_id"]
+
+        result = orchestrator.evaluate_iteration(
+            campaign_id=campaign_id,
+            iteration_id=str(iteration_id),
+            metrics=metrics,
+            notes=notes,
+        )
+        return {"evaluation": result}
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/campaigns/{campaign_id}/critic")
+def critic_campaign_iteration(
+    campaign_id: str,
+    payload: Dict[str, Any] = Body(default_factory=dict),
+) -> Dict[str, Any]:
+    iteration_id = payload.get("iteration_id")
+    if not iteration_id:
+        raise HTTPException(status_code=400, detail="iteration_id is required")
+
+    try:
+        proposal = orchestrator.critic_proposal(campaign_id=campaign_id, iteration_id=str(iteration_id))
+        return {"critic": proposal}
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/campaigns/{campaign_id}/loop-tick")
+def campaign_loop_tick(
+    campaign_id: str,
+    payload: Dict[str, Any] = Body(default_factory=dict),
+) -> Dict[str, Any]:
+    metrics = payload.get("metrics")
+    summary = str(payload.get("summary", ""))
+    notes = str(payload.get("notes", ""))
+
+    if not isinstance(metrics, dict):
+        raise HTTPException(status_code=400, detail="metrics payload is required")
+
+    try:
+        out = orchestrator.loop_tick(
+            campaign_id=campaign_id,
+            metrics=metrics,
+            summary=summary,
+            notes=notes,
+        )
+        return out
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
 @app.get("/campaigns/{campaign_id}/artifacts")
 def campaign_artifacts(campaign_id: str) -> Dict[str, Any]:
     try:

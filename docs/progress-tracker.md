@@ -114,6 +114,9 @@ Recommended command:
 - [x] Implement orchestrator v1 and campaign persistence
   - Completed: 2026-02-17
   - Notes: Added `api/campaigns.py` and new campaign APIs (`/campaigns`, state actions, iterations, artifacts, export request stub).
+- [x] Integrate evaluator/critic loop with stop rules in orchestrator
+  - Completed: 2026-02-18
+  - Notes: Added score-based evaluator, critic proposals, and stop criteria handling (`max_loops`, `max_no_improve_loops`) with new campaign APIs.
 - [ ] Run controlled optimization campaign on S1 (`ema_cross_atr`) across selected markets
 - [ ] Measure loop quality (stability, convergence, OOS degradation trend)
 - [ ] Produce validation report and go/no-go criteria for scaling to other strategies
@@ -128,12 +131,12 @@ Recommended command:
 ## Active Task Board
 
 ### Now
-- [ ] Start M4.3: evaluator/critic loop integration
+- [ ] Start M4.4: controlled pilot campaign on S1 (`ema_cross_atr`)
 
 ### Next
-- [ ] Start M4.4: controlled pilot campaign on S1 (`ema_cross_atr`)
 - [ ] Start M2.8: dashboard filtering and pagination UX
 - [ ] Start M3.2: pagination and filtering optimizations on SQLite paths
+- [ ] Start M4.5: exporter parity checks (`ctrader`, `pine`)
 
 ### Blocked / Decisions Needed
 - [ ] Finalize UI design system choice (minimal custom vs component library)
@@ -169,3 +172,7 @@ Recommended command:
 - 2026-02-18: Completed M3.1 SQLite report index and API integration.
 
 - 2026-02-18: Adopted SQLAlchemy ORM for report index service.
+
+- 2026-02-18: Migrated workspace to pnpm + Volta pinned toolchain.
+
+- 2026-02-18: Completed M4.3 evaluator/critic integration with stop rules.

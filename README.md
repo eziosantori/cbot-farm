@@ -101,6 +101,9 @@ pnpm run check:all
 - `POST /campaigns/{campaign_id}/cancel`
 - `GET /campaigns/{campaign_id}/iterations`
 - `POST /campaigns/{campaign_id}/iterations`
+- `POST /campaigns/{campaign_id}/evaluate`
+- `POST /campaigns/{campaign_id}/critic`
+- `POST /campaigns/{campaign_id}/loop-tick`
 - `GET /campaigns/{campaign_id}/artifacts`
 - `POST /export/{campaign_id}/{target}`
 
