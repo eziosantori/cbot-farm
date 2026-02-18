@@ -1,224 +1,117 @@
 # Multi-Market Bot Lab
 
-Initial framework to design, test, and optimize simple strategies across multiple markets
-(crypto, forex, equities, indices) with strict max drawdown control.
+Framework to design, test, and optimize strategies across crypto, forex, equities, indices, and commodities with controlled drawdown.
 
-## Objective
+## Tech Stack
+- Python engine (`cbot_farm/`, `bots/`)
+- FastAPI backend (`api/`)
+- React + Vite + TypeScript frontend (`web/`)
+- SQLite report index (SQLAlchemy ORM)
+- Package manager: `pnpm`
+- Toolchain manager: `Volta`
 
-- Define strategy specifications in Markdown.
-- Download historical data (baseline: Dukascopy).
-- Run an automated loop: development -> backtest -> optimization -> retry.
-- Save iterative reports for audit and comparison.
+## First Setup (Volta + pnpm)
 
-## Structure
-
-- `bots/` strategy files (human-readable, one bot per file).
-  - `base.py` strategy base class.
-  - `ema_cross_atr.py` first concrete bot.
-- `cbot_farm/` engine and orchestration package.
-  - `cli.py` command-line entrypoint.
-  - `pipeline.py` end-to-end cycle orchestration.
-  - `backtest.py` execution engine (strategy-agnostic).
-  - `ingestion.py` Dukascopy download logic.
-  - `optimization.py` risk gates.
-  - `indicators.py` shared indicators.
-  - `config.py` configuration loading.
-- `scripts/run_cycle.py` compatibility launcher.
-- `scripts/verify_instruments.py` instrument validation utility.
-- `api/` FastAPI backend (report read APIs).
-- `web/` React + Vite + TypeScript dashboard (Phase 1).
-- `config/` instrument universe, timeframes, and risk constraints.
-- `data/dukascopy/` downloaded historical data.
-- `reports/` per-run JSON outputs.
-- `/Users/esantori/Documents/cbot-farm/docs/strategy-development-playbook.md` guide for building, testing, and promoting new strategies.
-- `cbot-farm/docs/autonomous-strategy-lab-v1.md` blueprint for autonomous LLM-driven strategy loops and multi-platform export.
-- `/Users/esantori/Documents/cbot-farm/docs/system-flows.md` Mermaid flows for lifecycle, autonomous loop, and export pipeline.
-
-## Prerequisites
-
-- Python 3.9+
-- Node.js + npm (required by `npx dukascopy-node`)
-
-## Quick Start
-
+### 1) Install Volta
+macOS / Linux:
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-npm run cycle
-
-# Bootstrap API + Web
-npm run api:install
-npm run web:install
-
-# Terminal 1
-npm run api:dev
-
-# Terminal 2
-npm run web:dev
+curl https://get.volta.sh | bash
 ```
 
-## npm Scripts
-
+After installation, restart your shell and verify:
 ```bash
-# Full loop
-npm run cycle
-
-# Fast single-cycle run on EURUSD 1h
-npm run cycle:quick
-
-# List available strategy ids
-npm run list:strategies
-
-# Ingestion only (all configured markets/symbols/timeframes)
-npm run ingest
-
-# Ingestion only for Forex 1h
-npm run ingest:fx:h1
-
-# Ingestion only for EURUSD 1h
-npm run ingest:eurusd:h1
-
-# Ingestion only for NAS100 1h
-npm run ingest:nas:h1
-
-# Skip ingestion and run only the loop
-npm run cycle:no-ingest
-
-# Basic python syntax check
-npm run check
-
-# Run unit tests (Python business logic)
-npm run test:unit
-
-# Validate all configured symbols against Dukascopy
-npm run verify:instruments
-
-# Run API server (FastAPI)
-npm run api:dev
-
-# Rebuild SQLite report index (API must be running)
-npm run index:rebuild
-
-# Run web dashboard (Vite)
-npm run web:dev
-
-# Type-check TypeScript web app
-npm run web:typecheck
-
-# Full quality gate (checks + tests + web build)
-npm run check:all
+volta --version
 ```
 
-## Direct Python Commands
-
+### 2) Install pinned toolchain
+From repo root (`/Users/esantori/Documents/cbot-farm`):
 ```bash
-python3 -m cbot_farm.cli --list-strategies
-python3 -m cbot_farm.cli --strategy ema_cross_atr --ingest-only --markets forex --symbols EURUSD --timeframes 1h
-python3 -m cbot_farm.cli --strategy ema_cross_atr --skip-ingest --iterations 3
-python3 scripts/verify_instruments.py
+volta install node@22.22.0 pnpm@10.6.2
 ```
 
-Each ingestion run writes a manifest file to `reports/ingest/manifest_*.json`.
+Tool versions are pinned in:
+- `/Users/esantori/Documents/cbot-farm/package.json`
+- `/Users/esantori/Documents/cbot-farm/web/package.json`
 
-## Optimization Parameter Space
-
-The cycle supports configurable parameter ranges per strategy (panel-ready model):
-
-- `enabled` (true/false)
-- `type` (`int` or `float`)
-- if enabled: `min`, `max`, `step`
-- if disabled: fixed `value`
-
-Current configuration lives in:
-
-- `/cbot-farm/config/risk.json`
-  - `optimization.parameter_space.ema_cross_atr`
-
-Runtime behavior:
-
-- when parameter space is configured, iterations use generated candidates (grid/random mode);
-- when missing, fallback is strategy native sampling (`sample_params`).
-
-Each run report now includes:
-
-- `optimization.mode` (source, candidate index, counts, truncation)
-- `optimization.space` (effective parameter-space metadata)
-
-
-## Dukascopy Source
-
-Data download is executed with `dukascopy-node`, using this command shape per symbol/timeframe:
-
+### 3) Install workspace dependencies
 ```bash
-npx dukascopy-node -i <instrument> -from <YYYY-MM-DD> -to <YYYY-MM-DD> -t <timeframe> -f csv
+pnpm install
 ```
 
-## Instrument Discovery / Validation Commands
-
-Debug command used to inspect provider-side instrument validation details:
-
+### 4) Install Python API dependencies
 ```bash
-npx dukascopy-node -d -i __invalid__ -from 2024-01-01 -to 2024-01-02 -t h1 -f csv
+pnpm run api:install
 ```
 
-Authoritative check used in this project (runs a real short download check for each configured symbol after mapping):
+## First Run
 
 ```bash
-npm run verify:instruments
+# terminal 1
+pnpm run api:dev
+
+# terminal 2
+pnpm run web:dev
 ```
 
-For exact provider details and instrument coverage, refer to:
-[https://www.dukascopy-node.app/downloading-tick-data](https://www.dukascopy-node.app/downloading-tick-data)
+Optional (rebuild SQLite index with API running):
+```bash
+pnpm run index:rebuild
+```
 
+## Main Scripts (root)
 
-## Strategy Development Guide
+```bash
+pnpm run cycle
+pnpm run cycle:quick
+pnpm run cycle:no-ingest
+pnpm run ingest
+pnpm run ingest:fx:h1
+pnpm run ingest:eurusd:h1
+pnpm run ingest:nas:h1
+pnpm run list:strategies
+pnpm run verify:instruments
+pnpm run parity:backtrader
 
-For a complete workflow to create new bots (with end-of-iteration logging and LLM prompt examples), use:
+pnpm run api:dev
+pnpm run web:dev
+pnpm run web:typecheck
+pnpm run web:build
 
-- `/cbot-farm/docs/strategy-development-playbook.md`
+pnpm run test:unit
+pnpm run check:all
+```
 
-
-## Web Routes
-
-Web routes (current phase):
-- `/` dashboard overview
-- `/runs/:runId` run detail page
-- `/ingestion/:manifestId` ingest manifest detail page
-- `/optimization` optimization parameter panel
-
-
-## Campaign APIs
-
-Campaign APIs (M4.2 baseline):
-- `POST /campaigns`
-- `GET /campaigns`
-- `GET /campaigns/:campaignId`
-- `POST /campaigns/:campaignId/pause`
-- `POST /campaigns/:campaignId/resume`
-- `POST /campaigns/:campaignId/cancel`
-- `GET /campaigns/:campaignId/iterations`
-- `POST /campaigns/:campaignId/iterations` (iteration stub)
-- `GET /campaigns/:campaignId/artifacts`
-- `POST /export/:campaignId/:target` (`ctrader`, `pine`)
-
-Campaign persistence root:
-- `/Users/esantori/Documents/cbot-farm/reports/campaigns`
-
-
-## UI Charts
-
-Current charting features:
-- Performance trend chart (latest runs) on dashboard.
-- Run-level key metrics bar chart on run detail page.
-
-
-## Index APIs
-
-Index APIs (M3.1):
+## API Endpoints (current)
+- `GET /health`
+- `GET /runs`
+- `GET /runs/{run_id}`
+- `GET /ingest-manifests`
+- `GET /ingest-manifests/{manifest_id}`
+- `GET /optimization/spaces`
+- `GET /optimization/spaces/{strategy_id}`
+- `PUT /optimization/spaces/{strategy_id}`
+- `POST /optimization/preview/{strategy_id}`
 - `GET /index/status`
 - `POST /index/rebuild`
+- `POST /campaigns`
+- `GET /campaigns`
+- `GET /campaigns/{campaign_id}`
+- `POST /campaigns/{campaign_id}/pause`
+- `POST /campaigns/{campaign_id}/resume`
+- `POST /campaigns/{campaign_id}/cancel`
+- `GET /campaigns/{campaign_id}/iterations`
+- `POST /campaigns/{campaign_id}/iterations`
+- `GET /campaigns/{campaign_id}/artifacts`
+- `POST /export/{campaign_id}/{target}`
 
-When index is ready, `/runs` and `/ingest-manifests` read from SQLite index with filesystem fallback.
+## Web Routes
+- `/`
+- `/runs/:runId`
+- `/ingestion/:manifestId`
+- `/optimization`
 
-
-Note: the report index service now uses SQLAlchemy ORM on SQLite for better maintainability.
+## Docs
+- `/Users/esantori/Documents/cbot-farm/docs/progress-tracker.md`
+- `/Users/esantori/Documents/cbot-farm/docs/strategy-development-playbook.md`
+- `/Users/esantori/Documents/cbot-farm/docs/autonomous-strategy-lab-v1.md`
+- `/Users/esantori/Documents/cbot-farm/docs/system-flows.md`

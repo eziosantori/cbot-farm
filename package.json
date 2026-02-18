@@ -18,15 +18,20 @@
     "api:install": "python3 -m pip install -r api/requirements.txt",
     "api:dev": "python3 -m uvicorn api.main:app --reload --port 8000",
     "api:check": "python3 -m py_compile api/*.py",
-    "web:install": "npm --prefix web install",
-    "web:dev": "npm --prefix web run dev",
-    "web:build": "npm --prefix web run build",
-    "web:typecheck": "npm --prefix web run typecheck",
+    "web:install": "pnpm -C web install",
+    "web:dev": "pnpm -C web dev",
+    "web:build": "pnpm -C web build",
+    "web:typecheck": "pnpm -C web typecheck",
     "test:unit": "python3 -m unittest discover -s tests -p 'test_*.py'",
-    "check:all": "npm run check && npm run api:check && npm run test:unit && npm run web:typecheck && npm run web:build",
+    "check:all": "pnpm run check && pnpm run api:check && pnpm run test:unit && pnpm run web:typecheck && pnpm run web:build",
     "index:rebuild": "curl -sS -X POST http://127.0.0.1:8000/index/rebuild | python3 -m json.tool"
   },
   "engines": {
     "node": ">=18"
+  },
+  "packageManager": "pnpm@10.6.2",
+  "volta": {
+    "node": "22.22.0",
+    "pnpm": "10.6.2"
   }
 }
