@@ -24,14 +24,14 @@ volta --version
 ```
 
 ### 2) Install pinned toolchain
-From repo root (`/Users/esantori/Documents/cbot-farm`):
+From repo root (`/cbot-farm`):
 ```bash
 volta install node@22.22.0 pnpm@10.6.2
 ```
 
 Tool versions are pinned in:
-- `/Users/esantori/Documents/cbot-farm/package.json`
-- `/Users/esantori/Documents/cbot-farm/web/package.json`
+- `/cbot-farm/package.json`
+- `/cbot-farm/web/package.json`
 
 ### 3) Install workspace dependencies
 ```bash
@@ -114,7 +114,7 @@ pnpm run check:all
 - `/optimization`
 
 ## Docs
-- `/Users/esantori/Documents/cbot-farm/docs/progress-tracker.md`
-- `/Users/esantori/Documents/cbot-farm/docs/strategy-development-playbook.md`
-- `/Users/esantori/Documents/cbot-farm/docs/autonomous-strategy-lab-v1.md`
-- `/Users/esantori/Documents/cbot-farm/docs/system-flows.md`
+- `/cbot-farm/docs/progress-tracker.md`
+- `/cbot-farm/docs/strategy-development-playbook.md`
+- `/cbot-farm/docs/autonomous-strategy-lab-v1.md`
+- `/cbot-farm/docs/system-flows.md`
