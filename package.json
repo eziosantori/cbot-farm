@@ -23,7 +23,8 @@
     "web:build": "npm --prefix web run build",
     "web:typecheck": "npm --prefix web run typecheck",
     "test:unit": "python3 -m unittest discover -s tests -p 'test_*.py'",
-    "check:all": "npm run check && npm run api:check && npm run test:unit && npm run web:typecheck && npm run web:build"
+    "check:all": "npm run check && npm run api:check && npm run test:unit && npm run web:typecheck && npm run web:build",
+    "index:rebuild": "curl -sS -X POST http://127.0.0.1:8000/index/rebuild | python3 -m json.tool"
   },
   "engines": {
     "node": ">=18"

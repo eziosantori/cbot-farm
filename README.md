@@ -96,6 +96,9 @@ npm run verify:instruments
 # Run API server (FastAPI)
 npm run api:dev
 
+# Rebuild SQLite report index (API must be running)
+npm run index:rebuild
+
 # Run web dashboard (Vite)
 npm run web:dev
 
@@ -207,3 +210,12 @@ Campaign persistence root:
 Current charting features:
 - Performance trend chart (latest runs) on dashboard.
 - Run-level key metrics bar chart on run detail page.
+
+
+## Index APIs
+
+Index APIs (M3.1):
+- `GET /index/status`
+- `POST /index/rebuild`
+
+When index is ready, `/runs` and `/ingest-manifests` read from SQLite index with filesystem fallback.

@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api.campaigns import CampaignOrchestrator, CampaignStore
 from api.optimization import OptimizationService
+from api.report_index import ReportIndexService
 from api.report_reader import ReportReader
 
 
@@ -16,6 +17,7 @@ reader = ReportReader(reports_root=ROOT / "reports")
 campaign_store = CampaignStore(campaigns_root=ROOT / "reports" / "campaigns")
 orchestrator = CampaignOrchestrator(store=campaign_store)
 optimization_service = OptimizationService(risk_config_path=ROOT / "config" / "risk.json")
+index_service = ReportIndexService(reports_root=ROOT / "reports", db_path=ROOT / "reports" / "index" / "reports.db")
 
 app = FastAPI(title="cbot-farm API", version="0.2.0")
 app.add_middleware(
@@ -39,6 +41,9 @@ def runs(
     market: Optional[str] = None,
     status: Optional[str] = None,
 ) -> Dict[str, Any]:
+    idx = index_service.status()
+    if idx.get("ready"):
+        return index_service.list_runs(limit=limit, offset=offset, market=market, status=status)
     return reader.list_runs(limit=limit, offset=offset, market=market, status=status)
 
 
@@ -56,6 +61,9 @@ def ingest_manifests(
     offset: int = Query(default=0, ge=0),
     status: Optional[str] = None,
 ) -> Dict[str, Any]:
+    idx = index_service.status()
+    if idx.get("ready"):
+        return index_service.list_ingest_manifests(limit=limit, offset=offset, status=status)
     return reader.list_ingest_manifests(limit=limit, offset=offset, status=status)
 
 
@@ -65,6 +73,16 @@ def ingest_manifest_detail(manifest_id: str) -> Dict[str, Any]:
         return reader.get_ingest_manifest(manifest_id=manifest_id)
     except FileNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.get("/index/status")
+def index_status() -> Dict[str, Any]:
+    return index_service.status()
+
+
+@app.post("/index/rebuild")
+def rebuild_index() -> Dict[str, Any]:
+    return index_service.rebuild()
 
 
 @app.get("/optimization/spaces")

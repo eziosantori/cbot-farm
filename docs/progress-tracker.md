@@ -95,7 +95,9 @@ Recommended command:
   - Notes: Converted `web/src` to `.ts/.tsx`, added TS config and typecheck script, and validated build + routing pages.
 
 ### M3 - Reliability and Scale (Planned)
-- [ ] Introduce SQLite index for reports
+- [x] Introduce SQLite index for reports
+  - Completed: 2026-02-18
+  - Notes: Added `api/report_index.py` with rebuild/status/query support and wired API fallback to SQLite index for runs/manifests.
 - [ ] Add pagination and filtering at API level
 - [ ] Add report schema versioning and migration helpers
 - [ ] Add smoke tests for API and UI routes
@@ -121,12 +123,12 @@ Recommended command:
 ## Active Task Board
 
 ### Now
-- [ ] Start M3.1: SQLite report index
+- [ ] Start M4.3: evaluator/critic loop integration
 
 ### Next
-- [ ] Start M4.3: evaluator/critic loop integration
 - [ ] Start M4.4: controlled pilot campaign on S1 (`ema_cross_atr`)
 - [ ] Start M2.8: dashboard filtering and pagination UX
+- [ ] Start M3.2: pagination and filtering optimizations on SQLite paths
 
 ### Blocked / Decisions Needed
 - [ ] Finalize UI design system choice (minimal custom vs component library)
@@ -158,3 +160,5 @@ Recommended command:
 - 2026-02-17: Completed M2.6 optimization parameter panel (API + UI).
 
 - 2026-02-17: Completed M2.7 key metrics charts in web UI.
+
+- 2026-02-18: Completed M3.1 SQLite report index and API integration.
