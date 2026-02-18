@@ -219,3 +219,6 @@ Index APIs (M3.1):
 - `POST /index/rebuild`
 
 When index is ready, `/runs` and `/ingest-manifests` read from SQLite index with filesystem fallback.
+
+
+Note: the report index service now uses SQLAlchemy ORM on SQLite for better maintainability.

@@ -19,9 +19,14 @@ A step can be marked as completed only if:
 Recommended command:
 - `npm run test:unit`
 
+## Engineering Standards
+- Follow Python best practices for maintainable backend code (clear module boundaries, explicit validation, typed interfaces when useful, testable functions).
+- Follow React/TypeScript best practices for frontend code (typed data contracts, reusable components, predictable state flows, minimal side-effects).
+- Prefer incremental, production-ready changes to reduce future refactor cost.
+
 ## Project Status
 - Current phase: `M2 - Web UI Phase 1 (in progress)`
-- Last updated: `2026-02-17`
+- Last updated: `2026-02-18`
 
 ## Milestone Checklist
 
@@ -162,3 +167,5 @@ Recommended command:
 - 2026-02-17: Completed M2.7 key metrics charts in web UI.
 
 - 2026-02-18: Completed M3.1 SQLite report index and API integration.
+
+- 2026-02-18: Adopted SQLAlchemy ORM for report index service.
