@@ -302,3 +302,25 @@ Output:
 - Artifacts:
   - Validation report: `docs/m44-validation-report.md`
   - Source summary: `reports/campaigns/cmp_b2659f3c8e97/artifacts/pilot_m44_summary.json`
+
+## Iteration 5: EMA Cross ATR Reinforcement Filters
+- Iteration ID: `ema_cross_atr_rsi_vol_filter_v1`
+- Date: `2026-02-20`
+- Strategy ID: `ema_cross_atr`
+- Market/Timeframe: `forex/EURUSD/1h`
+- Data window: `2022-01-01 to 2024-12-31`
+- Parameter set:
+  - Fixed: `ema_fast=20`, `ema_slow=50`, `atr_period=14`, `rsi_period=14`, `atr_vol_window=50`
+  - Variable (initial grid): `rsi_gate` step 5 (`45..60`), `atr_vol_ratio_max` (`1.2..2.0`)
+- Key metrics:
+  - Return: `-6.79%`
+  - Max DD: `7.09%`
+  - Sharpe: `-2.25`
+  - OOS degradation: `100.0%`
+- Walk-forward summary: `filters reduced activity and drawdown versus previous baseline, but no OOS pass yet`
+- Decision: `iterate`
+- Next action:
+  - Run wider campaign on EURUSD+NAS100 with 50-100 combinations per scenario.
+  - Validate whether RSI/vol filters improve OOS stability across symbols.
+- Artifact:
+  - Report: `reports/run_20260220_093912_1.json`

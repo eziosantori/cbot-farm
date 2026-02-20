@@ -186,3 +186,4 @@ Recommended command:
 - 2026-02-19: Completed M4.4 controlled pilot campaign on S1 across forex/indices/commodities.
 - 2026-02-20: Completed M4.5 loop quality measurement and M4.6 validation report with no-go verdict.
 - 2026-02-20: Standardized documentation references to workspace-relative paths.
+- 2026-02-20: Added RSI reinforcement and ATR volatility filter to `ema_cross_atr`; fixed EMA/ATR core parameters for initial test phase.

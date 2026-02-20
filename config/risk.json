@@ -7,29 +7,25 @@
     "risk_per_trade_pct_max": 0.75
   },
   "optimization": {
-    "max_retries": 5,
+    "max_retries": 200,
     "min_sharpe": 1.2,
     "max_oos_degradation_pct": 30.0,
     "parameter_space": {
       "ema_cross_atr": {
         "search_mode": "grid",
-        "max_combinations": 400,
+        "max_combinations": 300,
         "shuffle": false,
         "seed": 42,
         "parameters": {
           "ema_fast": {
-            "enabled": true,
+            "enabled": false,
             "type": "int",
-            "min": 7,
-            "max": 21,
-            "step": 1
+            "value": 20
           },
           "ema_slow": {
-            "enabled": true,
+            "enabled": false,
             "type": "int",
-            "min": 30,
-            "max": 80,
-            "step": 5
+            "value": 50
           },
           "atr_period": {
             "enabled": false,
@@ -49,6 +45,30 @@
             "min": 1.0,
             "max": 5.0,
             "step": 0.5
+          },
+          "rsi_period": {
+            "enabled": false,
+            "type": "int",
+            "value": 14
+          },
+          "rsi_gate": {
+            "enabled": true,
+            "type": "int",
+            "min": 45,
+            "max": 60,
+            "step": 5
+          },
+          "atr_vol_window": {
+            "enabled": false,
+            "type": "int",
+            "value": 50
+          },
+          "atr_vol_ratio_max": {
+            "enabled": true,
+            "type": "float",
+            "min": 1.2,
+            "max": 2.0,
+            "step": 0.2
           }
         }
       },
