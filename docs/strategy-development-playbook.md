@@ -5,17 +5,17 @@ This document explains how to develop, test, evaluate, and promote a new strateg
 It is also the reference log to update at the end of each iteration.
 
 ## Scope
-Use this workflow when you want to add a new strategy under `/Users/esantori/Documents/cbot-farm/bots` and run it through the cycle.
+Use this workflow when you want to add a new strategy under `bots` and run it through the cycle.
 
 ## Prerequisites
-- Strategy specs available in `/Users/esantori/Documents/cbot-farm/docs/strategy-specs.md`.
+- Strategy specs available in `docs/strategy-specs.md`.
 - Data ingestion working for target market/timeframe.
 - Backtest pipeline running (`python3 -m cbot_farm.cli ...`).
 
 ## Mandatory Rule (End Of Iteration)
 At the end of every development iteration, update:
 1. this file (`strategy-development-playbook.md`) in section `Iteration Log`
-2. `/Users/esantori/Documents/cbot-farm/docs/progress-tracker.md`
+2. `docs/progress-tracker.md`
 
 ## Standard Workflow
 
@@ -31,7 +31,7 @@ Deliverable:
 - Add a short brief in this file under `Strategy Briefs`.
 
 ### Step 2 - Implement Bot Module
-- Create a new file in `/Users/esantori/Documents/cbot-farm/bots`.
+- Create a new file in `bots`.
 - Inherit from `BaseBotStrategy`.
 - Implement required methods:
   - `sample_params`
@@ -40,13 +40,13 @@ Deliverable:
   - `entry_signal`
   - `should_flip`
   - `risk_levels`
-- Register strategy in `/Users/esantori/Documents/cbot-farm/bots/__init__.py`.
+- Register strategy in `bots/__init__.py`.
 
 Deliverable:
 - Strategy selectable with `python3 -m cbot_farm.cli --list-strategies`.
 
 ### Step 3 - Configure Optimization Space
-- Add strategy parameter space in `/Users/esantori/Documents/cbot-farm/config/risk.json` under:
+- Add strategy parameter space in `config/risk.json` under:
   - `optimization.parameter_space.<strategy_id>`
 - Keep combinatorics under control (`max_combinations`).
 
@@ -64,7 +64,7 @@ python3 -m cbot_farm.cli --strategy <strategy_id> --skip-ingest --iterations 20 
 ```
 
 Deliverable:
-- Set of reports in `/Users/esantori/Documents/cbot-farm/reports`.
+- Set of reports in `reports`.
 
 ### Step 5 - Evaluate Quality
 Evaluate at least:
@@ -258,3 +258,47 @@ Output:
   - Keep `strict` parity as hard gate for future engine alignment work
   - Use `directional` parity as baseline validation gate in current phase
   - Proceed with M2 UI/API implementation and expose parity status in dashboard
+
+## Iteration 3: M4.4 Controlled Pilot Campaign
+- Iteration ID: `ema_cross_atr_m44_pilot_v1`
+- Date: `2026-02-19`
+- Strategy ID: `ema_cross_atr`
+- Market/Timeframe: `forex/EURUSD/1h, indices/NAS100/1h, commodities/XAUUSD/1h`
+- Data window:
+  - EURUSD: `2022-01-01 to 2024-12-31`
+  - NAS100: `2024-01-01 to 2024-12-31`
+  - XAUUSD: `2024-01-01 to 2024-01-02`
+- Parameter set: `optimization.parameter_space.ema_cross_atr`, 2 iterations per scenario, best report per scenario used in loop tick
+- Key metrics:
+  - EURUSD best: Return `-21.93%`, Sharpe `-2.96`, Max DD `22.16%`, OOS degradation `100.0%`
+  - NAS100 best: Return `-12.35%`, Sharpe `-3.12`, Max DD `12.57%`, OOS degradation `157.51%`
+  - XAUUSD best: Return `-0.03%`, Sharpe `-19.95`, Max DD `0.03%`, OOS degradation `100.0%`
+- Walk-forward summary: `negative OOS behavior across all tested scenarios; no promoted candidate`
+- Decision: `iterate`
+- Next action:
+  - Run M4.5 loop quality measurement with convergence trend analysis over longer windows.
+  - Expand commodities datasets before using them as quality signals (XAUUSD sample is too short).
+  - Add a unique report id generator to avoid same-second filename collisions in CLI runs.
+- Artifacts:
+  - Campaign summary: `reports/campaigns/cmp_b2659f3c8e97/artifacts/pilot_m44_summary.json`
+  - Pilot run snapshots: `reports/m44_pilot/`
+
+## Iteration 4: M4.5 Loop Quality Review
+- Iteration ID: `ema_cross_atr_m44_quality_review_v1`
+- Date: `2026-02-20`
+- Strategy ID: `ema_cross_atr`
+- Market/Timeframe: `forex/EURUSD/1h, indices/NAS100/1h, commodities/XAUUSD/1h`
+- Data window: `as captured in reports/m44_pilot/`
+- Parameter set: `best-per-scenario from m44 pilot summary`
+- Key metrics:
+  - Loop decisions: `iterate=2`, `reject_stop=1`
+  - Stability: `avg_score=36.9698`, `spread=31.2282`
+  - OOS degradation trend: `100.0%`, `157.51%`, `100.0%`
+- Walk-forward summary: `no robust convergence and no gate-compliant OOS behavior`
+- Decision: `reject`
+- Next action:
+  - Keep strategy in refinement mode.
+  - Re-run pilot after dataset expansion and CLI run-id uniqueness fix.
+- Artifacts:
+  - Validation report: `docs/m44-validation-report.md`
+  - Source summary: `reports/campaigns/cmp_b2659f3c8e97/artifacts/pilot_m44_summary.json`

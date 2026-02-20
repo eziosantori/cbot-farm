@@ -7,7 +7,7 @@ From now on, every completed implementation step must immediately update this fi
 - checking the task as complete (`[x]`)
 - adding completion date (YYYY-MM-DD)
 - adding a short outcome note
-- updating `/Users/esantori/Documents/cbot-farm/docs/strategy-development-playbook.md` (Iteration Log) when the step includes strategy development/backtest iterations
+- updating `docs/strategy-development-playbook.md` (Iteration Log) when the step includes strategy development/backtest iterations
 
 
 ## Definition of Done Rule
@@ -25,8 +25,8 @@ Recommended command:
 - Prefer incremental, production-ready changes to reduce future refactor cost.
 
 ## Project Status
-- Current phase: `M2 - Web UI Phase 1 (in progress)`
-- Last updated: `2026-02-18`
+- Current phase: `M5 - Strategy Rollout From Specs (next)`
+- Last updated: `2026-02-20`
 
 ## Milestone Checklist
 
@@ -117,9 +117,15 @@ Recommended command:
 - [x] Integrate evaluator/critic loop with stop rules in orchestrator
   - Completed: 2026-02-18
   - Notes: Added score-based evaluator, critic proposals, and stop criteria handling (`max_loops`, `max_no_improve_loops`) with new campaign APIs.
-- [ ] Run controlled optimization campaign on S1 (`ema_cross_atr`) across selected markets
-- [ ] Measure loop quality (stability, convergence, OOS degradation trend)
-- [ ] Produce validation report and go/no-go criteria for scaling to other strategies
+- [x] Run controlled optimization campaign on S1 (`ema_cross_atr`) across selected markets
+  - Completed: 2026-02-19
+  - Notes: Executed pilot on `forex/EURUSD/1h`, `indices/NAS100/1h`, `commodities/XAUUSD/1h`; stored summary artifact in `reports/campaigns/cmp_b2659f3c8e97/artifacts/pilot_m44_summary.json`.
+- [x] Measure loop quality (stability, convergence, OOS degradation trend)
+  - Completed: 2026-02-20
+  - Notes: Computed loop stability and convergence signals from pilot outputs; no robust convergence detected and OOS degradation remained above gates.
+- [x] Produce validation report and go/no-go criteria for scaling to other strategies
+  - Completed: 2026-02-20
+  - Notes: Added `docs/m44-validation-report.md` with criteria matrix and verdict `no-go` for scaling at current state.
 
 ### M5 - Strategy Rollout From Specs (Planned)
 - [ ] Implement S1 Trend EMA Breakout as production bot module
@@ -131,12 +137,12 @@ Recommended command:
 ## Active Task Board
 
 ### Now
-- [ ] Start M4.4: controlled pilot campaign on S1 (`ema_cross_atr`)
+- [ ] Start M5.1: implement S1 Trend EMA Breakout as production bot module
 
 ### Next
 - [ ] Start M2.8: dashboard filtering and pagination UX
 - [ ] Start M3.2: pagination and filtering optimizations on SQLite paths
-- [ ] Start M4.5: exporter parity checks (`ctrader`, `pine`)
+- [ ] Start exporter parity checks (`ctrader`, `pine`)
 
 ### Blocked / Decisions Needed
 - [ ] Finalize UI design system choice (minimal custom vs component library)
@@ -176,3 +182,7 @@ Recommended command:
 - 2026-02-18: Migrated workspace to pnpm + Volta pinned toolchain.
 
 - 2026-02-18: Completed M4.3 evaluator/critic integration with stop rules.
+
+- 2026-02-19: Completed M4.4 controlled pilot campaign on S1 across forex/indices/commodities.
+- 2026-02-20: Completed M4.5 loop quality measurement and M4.6 validation report with no-go verdict.
+- 2026-02-20: Standardized documentation references to workspace-relative paths.

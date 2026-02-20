@@ -5,6 +5,7 @@ from statistics import mean, pstdev
 from typing import Dict, List, Optional
 
 from bots.base import BaseBotStrategy
+from .config import ROOT
 from .types import Metrics
 
 
@@ -319,6 +320,11 @@ def run_real_backtest(
         )
 
     dataset_path = candidates[0]
+    dataset_ref = (
+        str(dataset_path.relative_to(ROOT))
+        if dataset_path.is_absolute() and ROOT in dataset_path.parents
+        else str(dataset_path)
+    )
     bars = _load_ohlc_bars(dataset_path)
     if len(bars) < 12:
         return (
@@ -331,7 +337,7 @@ def run_real_backtest(
             {
                 "status": "failed",
                 "reason": f"insufficient bars ({len(bars)})",
-                "dataset": str(dataset_path),
+                "dataset": dataset_ref,
             },
         )
 
@@ -473,7 +479,7 @@ def run_real_backtest(
 
     details = {
         "status": "ok",
-        "dataset": str(dataset_path),
+        "dataset": dataset_ref,
         "bars": len(bars),
         "timeframe": timeframe,
         "strategy_id": strategy.strategy_id,
