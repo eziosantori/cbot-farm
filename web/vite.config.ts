@@ -8,6 +8,9 @@ export default defineConfig({
     proxy: {
       '/health': 'http://127.0.0.1:8000',
       '/runs': 'http://127.0.0.1:8000',
+      '/batches': 'http://127.0.0.1:8000',
+      '/simulations': 'http://127.0.0.1:8000',
+      '/strategy-workflow': 'http://127.0.0.1:8000',
       '/ingest-manifests': 'http://127.0.0.1:8000',
       '/optimization': 'http://127.0.0.1:8000',
       '/campaigns': 'http://127.0.0.1:8000',

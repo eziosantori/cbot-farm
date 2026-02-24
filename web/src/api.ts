@@ -44,10 +44,7 @@ export function useFetch<T>(path: string): FetchState<T> {
   return { data, error, loading }
 }
 
-export async function apiRequest<T>(
-  path: string,
-  options: RequestInit = {}
-): Promise<T> {
+export async function apiRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     headers: {
       'Content-Type': 'application/json',
@@ -58,6 +55,17 @@ export async function apiRequest<T>(
 
   if (!res.ok) {
     throw new Error(`${path} failed with status ${res.status}`)
+  }
+
+  const contentType = res.headers.get('content-type') || ''
+  if (!contentType.includes('application/json')) {
+    const body = await res.text()
+    if (body.trim().startsWith('<!doctype') || body.trim().startsWith('<html')) {
+      throw new Error(
+        `Expected JSON from ${path} but received HTML. Check Vite proxy or VITE_API_BASE configuration.`
+      )
+    }
+    throw new Error(`Expected JSON from ${path} but received content-type: ${contentType || 'unknown'}`)
   }
 
   return (await res.json()) as T

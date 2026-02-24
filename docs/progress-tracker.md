@@ -25,7 +25,7 @@ Recommended command:
 - Prefer incremental, production-ready changes to reduce future refactor cost.
 
 ## Project Status
-- Current phase: `M5 - Strategy Rollout From Specs (next)`
+- Current phase: `M2 - Web UI Phase 2 (in progress)`
 - Last updated: `2026-02-20`
 
 ## Milestone Checklist
@@ -70,7 +70,7 @@ Recommended command:
   - Completed: 2026-02-16
   - Notes: Added `scripts/backtrader_parity.py` with strict + directional parity statuses; latest run reported `directional_pass` for EMA Cross ATR on EURUSD 1h.
 
-### M2 - Web UI Phase 1 (In Progress)
+### M2 - Web UI Platform (In Progress)
 - [x] Bootstrap backend (`FastAPI`) in `api/`
   - Completed: 2026-02-17
   - Notes: Added `api/main.py` with base FastAPI app and health endpoint.
@@ -98,6 +98,21 @@ Recommended command:
 - [x] Migrate web frontend from JavaScript to TypeScript
   - Completed: 2026-02-17
   - Notes: Converted `web/src` to `.ts/.tsx`, added TS config and typecheck script, and validated build + routing pages.
+
+- [x] Add stale-index fallback for fresh run visibility in API reads
+  - Completed: 2026-02-20
+  - Notes: `/runs` and `/ingest-manifests` now fallback to filesystem reader when SQLite index is stale.
+- [x] Add batch analytics endpoints and UI pages (`/batches`, `/batches/:batchId`)
+  - Completed: 2026-02-20
+  - Notes: Added batch list/detail APIs and TypeScript pages with best-run ratio cards and equity curves.
+- [x] Add simulation launcher from UI (parameter override + run trigger)
+  - Completed: 2026-02-20
+  - Notes: Added `/simulations` page plus `/simulations/options` and `/simulations/run` APIs with parameter override support and run link output.
+- [x] Add strategy workflow board (state machine + transitions)
+  - Completed: 2026-02-24
+  - Notes: Added `/strategy-workflow` APIs and `/workflow` UI with guarded state transitions and last-run context.
+- [ ] Add strategy intake UI for metadata/prompt capture
+
 
 ### M3 - Reliability and Scale (Planned)
 - [x] Introduce SQLite index for reports
@@ -137,12 +152,12 @@ Recommended command:
 ## Active Task Board
 
 ### Now
-- [ ] Start M5.1: implement S1 Trend EMA Breakout as production bot module
+- [ ] Start M2.11: strategy intake UI metadata flow
 
 ### Next
-- [ ] Start M2.8: dashboard filtering and pagination UX
 - [ ] Start M3.2: pagination and filtering optimizations on SQLite paths
 - [ ] Start exporter parity checks (`ctrader`, `pine`)
+- [ ] Resume M5.1: implement S1 Trend EMA Breakout as production bot module
 
 ### Blocked / Decisions Needed
 - [ ] Finalize UI design system choice (minimal custom vs component library)
@@ -187,3 +202,10 @@ Recommended command:
 - 2026-02-20: Completed M4.5 loop quality measurement and M4.6 validation report with no-go verdict.
 - 2026-02-20: Standardized documentation references to workspace-relative paths.
 - 2026-02-20: Added RSI reinforcement and ATR volatility filter to `ema_cross_atr`; fixed EMA/ATR core parameters for initial test phase.
+
+- 2026-02-20: Added UI Phase 2 roadmap for batch analytics, simulation launcher, and workflow board.
+- 2026-02-20: Completed M2.8 slice with batch analytics pages and stale-index fallback behavior.
+
+- 2026-02-20: Completed M2.9 simulation launcher (API + UI) with manual parameter override flow.
+
+- 2026-02-24: Completed M2.10 strategy workflow board (API + UI) with guarded transitions.

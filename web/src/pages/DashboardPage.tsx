@@ -41,7 +41,7 @@ export default function DashboardPage(): JSX.Element {
       <header>
         <h1>cbot-farm dashboard</h1>
         <p>
-          Runs and ingestion overview. <Link to="/optimization">Open optimization panel</Link>
+          Runs and ingestion overview. <Link to="/optimization">Open optimization panel</Link> | <Link to="/batches">Open batch analytics</Link> | <Link to="/simulations">Open simulation launcher</Link> | <Link to="/workflow">Open workflow board</Link>
         </p>
       </header>
 

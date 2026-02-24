@@ -94,3 +94,10 @@ This maps to the runtime parameter space used by the cycle engine.
 - Metrics/charts reflect actual report values.
 - User can configure optimization parameters (`enabled/min/max/step/value`) per strategy.
 - Error states are visible and understandable.
+
+## Phase 2 Extension
+See `docs/ui-phase2-roadmap.md` for the next delivery scope:
+- batch analytics console (`/batches`, `/batches/:batchId`)
+- simulation launcher from UI
+- strategy workflow board/state transitions
+- strategy intake metadata flow

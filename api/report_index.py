@@ -70,6 +70,31 @@ class ReportIndexService:
         with path.open("r", encoding="utf-8") as fh:
             return json.load(fh)
 
+    def _latest_source_mtime(self) -> Optional[datetime]:
+        latest_ts = 0.0
+        for path in self.reports_root.glob("run_*.json"):
+            if path.is_file():
+                latest_ts = max(latest_ts, path.stat().st_mtime)
+        for path in self.ingest_root.glob("manifest_*.json"):
+            if path.is_file():
+                latest_ts = max(latest_ts, path.stat().st_mtime)
+
+        if latest_ts <= 0.0:
+            return None
+        return datetime.fromtimestamp(latest_ts, tz=timezone.utc)
+
+    def _parse_indexed_at(self, raw: Optional[str]) -> Optional[datetime]:
+        if not raw:
+            return None
+        try:
+            normalized = raw.replace("Z", "+00:00")
+            dt = datetime.fromisoformat(normalized)
+            if dt.tzinfo is None:
+                return dt.replace(tzinfo=timezone.utc)
+            return dt.astimezone(timezone.utc)
+        except ValueError:
+            return None
+
     def rebuild(self) -> Dict[str, Any]:
         now = datetime.now(timezone.utc).isoformat()
 
@@ -161,11 +186,21 @@ class ReportIndexService:
             max_runs_idx = session.scalar(select(func.max(RunIndex.indexed_at)))
             max_manifest_idx = session.scalar(select(func.max(IngestManifestIndex.indexed_at)))
 
+        last_indexed_at = max_runs_idx or max_manifest_idx
+        latest_source_dt = self._latest_source_mtime()
+        indexed_dt = self._parse_indexed_at(last_indexed_at)
+
+        stale = False
+        if indexed_dt is not None and latest_source_dt is not None:
+            stale = latest_source_dt > indexed_dt
+
         return {
             "db_path": str(self.db_path),
             "runs_count": runs_count,
             "manifests_count": manifests_count,
-            "last_indexed_at": max_runs_idx or max_manifest_idx,
+            "last_indexed_at": last_indexed_at,
+            "latest_source_updated_at": latest_source_dt.isoformat() if latest_source_dt else None,
+            "stale": stale,
             "ready": runs_count > 0 or manifests_count > 0,
         }
 

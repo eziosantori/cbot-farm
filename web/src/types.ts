@@ -106,3 +106,93 @@ export type OptimizationSpaceList = {
     max_combinations: number
   }>
 }
+
+export type BatchItem = {
+  batch_id: string
+  created_at?: string | null
+  strategy?: string | null
+  max_retries?: number | null
+  scenarios?: number
+  total_reports?: number
+  promoted_count?: number
+  best_return_pct?: number | null
+}
+
+export type BatchBestRecord = {
+  report?: string
+  iteration?: number
+  params?: JsonRecord
+  metrics?: JsonRecord
+  score_return_minus_dd?: number
+  promoted?: boolean
+  candidate_index?: number
+  total_candidates?: number
+}
+
+export type BatchScenario = {
+  name: string
+  market?: string
+  symbol?: string
+  timeframe?: string
+  iterations?: number
+  reports?: number
+  promoted_count?: number
+  best?: BatchBestRecord
+  best_run_id?: string | null
+  best_equity_curve?: Array<{ x: number; equity: number }>
+  best_trades_count?: number | null
+}
+
+export type BatchDetailResponse = {
+  batch_id: string
+  summary: JsonRecord
+  scenarios: BatchScenario[]
+}
+
+export type SimOptionsResponse = {
+  strategies: Record<string, string>
+  markets: Record<string, { symbols: string[]; timeframes: string[] }>
+  defaults: {
+    strategy_id: string
+    iterations: number
+    skip_ingest: boolean
+  }
+}
+
+export type SimRunResponse = {
+  simulation: {
+    run_id: string
+    external_run_id: string
+    report_path: string
+    metrics: JsonRecord
+    gates: JsonRecord
+    status: string
+  }
+}
+
+export type WorkflowRunRef = {
+  run_id?: string
+  created_at?: string | null
+  metrics?: JsonRecord
+}
+
+export type WorkflowItem = {
+  strategy_id: string
+  display_name: string
+  state: string
+  updated_at?: string | null
+  allowed_transitions: string[]
+  last_run?: WorkflowRunRef | null
+  history_size?: number
+}
+
+export type WorkflowBoardResponse = {
+  states: string[]
+  counts: Record<string, number>
+  items: WorkflowItem[]
+  updated_at?: string | null
+}
+
+export type WorkflowTransitionResponse = {
+  strategy: JsonRecord
+}

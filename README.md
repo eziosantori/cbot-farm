@@ -87,6 +87,13 @@ pnpm run check:all
 - `GET /runs/{run_id}`
 - `GET /ingest-manifests`
 - `GET /ingest-manifests/{manifest_id}`
+- `GET /batches`
+- `GET /batches/{batch_id}`
+- `GET /simulations/options`
+- `POST /simulations/run`
+- `GET /strategy-workflow`
+- `POST /strategy-workflow/init`
+- `POST /strategy-workflow/{strategy_id}/transition`
 - `GET /optimization/spaces`
 - `GET /optimization/spaces/{strategy_id}`
 - `PUT /optimization/spaces/{strategy_id}`
@@ -112,9 +119,14 @@ pnpm run check:all
 - `/runs/:runId`
 - `/ingestion/:manifestId`
 - `/optimization`
+- `/batches`
+- `/batches/:batchId`
+- `/simulations`
+- `/workflow`
 
 ## Docs
-- `/cbot-farm/docs/progress-tracker.md`
-- `/cbot-farm/docs/strategy-development-playbook.md`
-- `/cbot-farm/docs/autonomous-strategy-lab-v1.md`
-- `/cbot-farm/docs/system-flows.md`
+- `docs/progress-tracker.md`
+- `docs/strategy-development-playbook.md`
+- `docs/autonomous-strategy-lab-v1.md`
+- `docs/system-flows.md`
+- `docs/ui-phase2-roadmap.md`

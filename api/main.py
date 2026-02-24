@@ -3,13 +3,17 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from cbot_farm.config import load_configs
 from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.campaigns import CampaignOrchestrator, CampaignStore
+from api.batch_reports import BatchReportService
 from api.optimization import OptimizationService
 from api.report_index import ReportIndexService
 from api.report_reader import ReportReader
+from api.simulations import SimulationService
+from api.strategy_workflow import StrategyWorkflowService
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,6 +22,18 @@ campaign_store = CampaignStore(campaigns_root=ROOT / "reports" / "campaigns")
 orchestrator = CampaignOrchestrator(store=campaign_store)
 optimization_service = OptimizationService(risk_config_path=ROOT / "config" / "risk.json")
 index_service = ReportIndexService(reports_root=ROOT / "reports", db_path=ROOT / "reports" / "index" / "reports.db")
+batch_service = BatchReportService(reports_root=ROOT / "reports")
+universe_cfg, risk_cfg = load_configs()
+simulation_service = SimulationService(
+    reports_root=ROOT / "reports",
+    data_root=ROOT / "data" / "dukascopy",
+    universe_cfg=universe_cfg,
+    risk_cfg=risk_cfg,
+)
+workflow_service = StrategyWorkflowService(
+    storage_path=ROOT / "reports" / "strategy_workflow.json",
+    reports_root=ROOT / "reports",
+)
 
 app = FastAPI(title="cbot-farm API", version="0.2.0")
 app.add_middleware(
@@ -42,7 +58,7 @@ def runs(
     status: Optional[str] = None,
 ) -> Dict[str, Any]:
     idx = index_service.status()
-    if idx.get("ready"):
+    if idx.get("ready") and not idx.get("stale"):
         return index_service.list_runs(limit=limit, offset=offset, market=market, status=status)
     return reader.list_runs(limit=limit, offset=offset, market=market, status=status)
 
@@ -62,7 +78,7 @@ def ingest_manifests(
     status: Optional[str] = None,
 ) -> Dict[str, Any]:
     idx = index_service.status()
-    if idx.get("ready"):
+    if idx.get("ready") and not idx.get("stale"):
         return index_service.list_ingest_manifests(limit=limit, offset=offset, status=status)
     return reader.list_ingest_manifests(limit=limit, offset=offset, status=status)
 
@@ -83,6 +99,65 @@ def index_status() -> Dict[str, Any]:
 @app.post("/index/rebuild")
 def rebuild_index() -> Dict[str, Any]:
     return index_service.rebuild()
+
+
+@app.get("/batches")
+def list_batches(
+    limit: int = Query(default=20, ge=1, le=200),
+    offset: int = Query(default=0, ge=0),
+    strategy: Optional[str] = None,
+) -> Dict[str, Any]:
+    return batch_service.list_batches(limit=limit, offset=offset, strategy=strategy)
+
+
+@app.get("/batches/{batch_id}")
+def batch_detail(batch_id: str) -> Dict[str, Any]:
+    try:
+        return batch_service.get_batch(batch_id=batch_id)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.get("/simulations/options")
+def simulations_options() -> Dict[str, Any]:
+    return simulation_service.options()
+
+
+@app.post("/simulations/run")
+def run_simulation(payload: Dict[str, Any] = Body(default_factory=dict)) -> Dict[str, Any]:
+    try:
+        return {"simulation": simulation_service.run(payload)}
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/strategy-workflow")
+def strategy_workflow_board() -> Dict[str, Any]:
+    return workflow_service.get_board()
+
+
+@app.post("/strategy-workflow/init")
+def strategy_workflow_init() -> Dict[str, Any]:
+    return workflow_service.init_from_registry()
+
+
+@app.post("/strategy-workflow/{strategy_id}/transition")
+def strategy_workflow_transition(
+    strategy_id: str,
+    payload: Dict[str, Any] = Body(default_factory=dict),
+) -> Dict[str, Any]:
+    to_state = str(payload.get("to_state", "")).strip()
+    note = str(payload.get("note", ""))
+    if not to_state:
+        raise HTTPException(status_code=400, detail="to_state is required")
+
+    try:
+        item = workflow_service.transition(strategy_id=strategy_id, to_state=to_state, note=note)
+        return {"strategy": item}
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @app.get("/optimization/spaces")
