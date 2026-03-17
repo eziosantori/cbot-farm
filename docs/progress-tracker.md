@@ -119,7 +119,9 @@ Recommended command:
 - [x] Introduce visual system foundation and persistent app shell
   - Completed: 2026-03-17
   - Notes: Added `docs/ui-visual-system.md`, shared dashboard/app-shell components, and a refreshed navigation/layout model for the web app.
-- [ ] Refresh batch analytics and workflow pages on the new visual system
+- [x] Refresh batch analytics and workflow pages on the new visual system
+  - Completed: 2026-03-17
+  - Notes: Redesigned `/batches`, `/batches/:batchId`, and `/workflow` with badges, insight cards, scenario panels, and a real workflow board on the shared visual system.
 - [ ] Polish intake, optimization, and simulations pages with the shared component set
 
 
@@ -161,10 +163,9 @@ Recommended command:
 ## Active Task Board
 
 ### Now
-- [ ] Refresh batch analytics and workflow pages on the new visual system
+- [ ] Polish intake, optimization, and simulations pages with the shared component set
 
 ### Next
-- [ ] Polish intake, optimization, and simulations pages with the shared component set
 - [ ] Start M3.2: pagination and filtering optimizations on SQLite paths
 - [ ] Start exporter parity checks (`ctrader`, `pine`)
 - [ ] Resume M5.1: implement S1 Trend EMA Breakout as production bot module
@@ -223,3 +224,4 @@ Recommended command:
 
 - 2026-03-17: Completed M2.11 strategy intake flow (API + UI) with persistent intake artifacts and generated LLM prompt bundles.
 - 2026-03-17: Started UI experience refresh with a new visual system, persistent shell, and redesigned dashboard pilot.
+- 2026-03-17: Refreshed batch analytics and workflow pages on the new visual system, replacing basic lists with operator-focused boards and scenario panels.

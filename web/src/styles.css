@@ -238,6 +238,39 @@ button:disabled {
   cursor: default;
 }
 
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.65);
+  color: var(--surface-muted);
+}
+
+.badge--accent {
+  background: rgba(15, 106, 97, 0.12);
+  color: var(--accent-strong);
+  border-color: rgba(15, 106, 97, 0.18);
+}
+
+.badge--success {
+  background: rgba(36, 128, 90, 0.12);
+  color: var(--success);
+  border-color: rgba(36, 128, 90, 0.18);
+}
+
+.badge--warning {
+  background: rgba(184, 79, 60, 0.12);
+  color: var(--warning);
+  border-color: rgba(184, 79, 60, 0.18);
+}
+
 .hero-panel,
 .surface-card,
 .card,
@@ -389,6 +422,42 @@ pre {
   color: var(--accent-alt);
 }
 
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-3);
+}
+
+.insight-card {
+  display: grid;
+  gap: 10px;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-soft);
+  background: rgba(255, 252, 246, 0.85);
+  box-shadow: var(--shadow-soft);
+  color: var(--surface-ink);
+  text-decoration: none;
+}
+
+.insight-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(15, 106, 97, 0.16);
+}
+
+.insight-card__head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.insight-card__meta {
+  font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+  font-size: 0.78rem;
+  color: var(--surface-muted);
+}
+
 h2,
 h3 {
   margin-top: 0;
@@ -466,6 +535,51 @@ pre {
   font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
 }
 
+.metric-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.metric-strip > div {
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.52);
+  border: 1px solid rgba(30, 58, 84, 0.08);
+}
+
+.metric-strip span,
+.workflow-card__metrics span {
+  display: block;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--surface-muted);
+}
+
+.metric-strip strong,
+.workflow-card__metrics strong {
+  font-size: 1.1rem;
+}
+
+.batch-scenario pre {
+  margin: 0;
+  min-height: 160px;
+}
+
+.scenario-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 1fr);
+  gap: var(--space-3);
+}
+
+.scenario-grid__main,
+.scenario-grid__side {
+  display: grid;
+  gap: var(--space-3);
+}
+
 .bar-chart {
   display: grid;
   gap: 10px;
@@ -538,6 +652,82 @@ pre {
   font-size: 0.85rem;
 }
 
+.workflow-board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(280px, 1fr));
+  gap: var(--space-3);
+  align-items: start;
+  overflow-x: auto;
+}
+
+.workflow-column {
+  min-width: 280px;
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-soft);
+  background: rgba(255, 250, 242, 0.82);
+  box-shadow: var(--shadow-soft);
+}
+
+.workflow-column__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.workflow-column__empty,
+.workflow-card__empty {
+  color: var(--surface-muted);
+}
+
+.workflow-card {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(30, 58, 84, 0.08);
+}
+
+.workflow-card__head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  align-items: start;
+}
+
+.workflow-card__head h3,
+.workflow-card__run {
+  margin: 0;
+}
+
+.workflow-card__id {
+  margin: 0 0 4px;
+  font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+  font-size: 0.78rem;
+  color: var(--surface-muted);
+}
+
+.workflow-card__metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.workflow-card__metrics > div {
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(15, 106, 97, 0.04);
+}
+
+.workflow-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 @media (max-width: 1080px) {
   .app-shell {
     grid-template-columns: 1fr;
@@ -552,12 +742,17 @@ pre {
 
   .dashboard-grid,
   .hero-panel,
-  .page-header {
+  .page-header,
+  .scenario-grid {
     grid-template-columns: 1fr;
   }
 
   .page-header {
     align-items: start;
+  }
+
+  .workflow-board {
+    grid-template-columns: 1fr;
   }
 }
 
