@@ -71,6 +71,7 @@ pnpm run ingest:nas:h1
 pnpm run list:strategies
 pnpm run verify:instruments
 pnpm run parity:backtrader
+pnpm run reports:migrate
 
 pnpm run api:dev
 pnpm run web:dev
@@ -138,3 +139,4 @@ pnpm run check:all
 - `docs/system-flows.md`
 - `docs/ui-phase2-roadmap.md`
 - `docs/ui-visual-system.md`
+- `docs/report-schema-versioning.md`

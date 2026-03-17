@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from cbot_farm.report_schema import migrate_report_payload
+
 
 class BatchReportService:
     def __init__(self, reports_root: Path) -> None:
@@ -11,7 +13,8 @@ class BatchReportService:
 
     def _load_json(self, path: Path) -> Dict[str, Any]:
         with path.open("r", encoding="utf-8") as fh:
-            return json.load(fh)
+            payload = json.load(fh)
+        return migrate_report_payload(payload, path=path)
 
     def _batch_dirs(self) -> List[Path]:
         dirs = [p for p in self.reports_root.glob("batch_*") if p.is_dir() and (p / "summary.json").exists()]

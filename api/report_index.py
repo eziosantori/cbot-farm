@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional
 
+from cbot_farm.report_schema import migrate_report_payload
 from sqlalchemy import Float, Integer, String, create_engine, func, select
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
@@ -82,7 +83,8 @@ class ReportIndexService:
 
     def _load_json(self, path: Path) -> Dict[str, Any]:
         with path.open("r", encoding="utf-8") as fh:
-            return json.load(fh)
+            payload = json.load(fh)
+        return migrate_report_payload(payload, path=path)
 
     def _latest_source_mtime(self) -> Optional[datetime]:
         latest_ts = 0.0

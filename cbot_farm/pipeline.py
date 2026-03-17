@@ -9,6 +9,7 @@ from .config import REPORTS_DIR, ROOT, load_configs
 from .ingestion import ingest_data
 from .optimization import evaluate_gates
 from .param_optimization import build_param_plan, params_for_iteration
+from .report_schema import CURRENT_RUN_REPORT_SCHEMA_VERSION, RUN_REPORT_KIND
 
 
 def run_cycle(
@@ -76,9 +77,15 @@ def run_cycle(
         else:
             retries_without_improvement += 1
 
-        run_id = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        now = datetime.now(timezone.utc)
+        created_at = now.isoformat()
+        run_id = now.strftime("%Y%m%d_%H%M%S")
         payload = {
+            "schema_version": CURRENT_RUN_REPORT_SCHEMA_VERSION,
+            "report_kind": RUN_REPORT_KIND,
             "run_id": f"{run_id}_{iteration}",
+            "created_at": created_at,
+            "run_at": created_at,
             "iteration": iteration,
             "ingest": ingest_state,
             "strategy": strategy.display_name,

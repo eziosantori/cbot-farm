@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Optional
 from bots import get_strategy, list_strategies
 from cbot_farm.backtest import run_real_backtest
 from cbot_farm.optimization import evaluate_gates
+from cbot_farm.report_schema import CURRENT_RUN_REPORT_SCHEMA_VERSION, RUN_REPORT_KIND
 
 
 class SimulationService:
@@ -65,8 +66,11 @@ class SimulationService:
         run_stem = f"run_{external_run_id}"
 
         out_payload = {
+            "schema_version": CURRENT_RUN_REPORT_SCHEMA_VERSION,
+            "report_kind": RUN_REPORT_KIND,
             "run_id": external_run_id,
             "created_at": now.isoformat(),
+            "run_at": now.isoformat(),
             "mode": "simulation_manual",
             "strategy": strategy.display_name,
             "strategy_id": strategy.strategy_id,

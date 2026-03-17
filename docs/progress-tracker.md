@@ -134,7 +134,9 @@ Recommended command:
 - [x] Add pagination and filtering at API level
   - Completed: 2026-03-17
   - Notes: Extended `/runs` and `/ingest-manifests` across both SQLite and filesystem paths with `strategy_id`, `symbol`, `timeframe`, and `from/to` filters plus matching tests.
-- [ ] Add report schema versioning and migration helpers
+- [x] Add report schema versioning and migration helpers
+  - Completed: 2026-03-17
+  - Notes: Added `cbot_farm/report_schema.py`, migrated readers/indexers to normalized payloads, stamped new run/manifest writers with `schema_version`, and added `pnpm run reports:migrate`.
 - [ ] Add smoke tests for API and UI routes
 
 ### M4 - Feedback Loop Validation (Planned)
@@ -167,10 +169,9 @@ Recommended command:
 ## Active Task Board
 
 ### Now
-- [ ] Start M3.3: report schema versioning and migration helpers
+- [ ] Start M3.4: smoke tests for API and UI routes
 
 ### Next
-- [ ] Start M3.4: smoke tests for API and UI routes
 - [ ] Start exporter parity checks (`ctrader`, `pine`)
 - [ ] Resume M5.1: implement S1 Trend EMA Breakout as production bot module
 - [ ] Tighten `ema_cross_atr` acceptance gates after the latest batch improvements
@@ -231,3 +232,4 @@ Recommended command:
 - 2026-03-17: Refreshed batch analytics and workflow pages on the new visual system, replacing basic lists with operator-focused boards and scenario panels.
 - 2026-03-17: Completed the remaining UI refresh work on intake, optimization, and simulations; M2A is now closed.
 - 2026-03-17: Completed M3.2 by extending SQLite/filesystem report listing filters and pagination semantics at the API layer.
+- 2026-03-17: Completed M3.3 by introducing canonical report schema migration helpers and versioned run/manifest writers.

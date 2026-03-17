@@ -5,6 +5,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
 
+from cbot_farm.report_schema import migrate_report_payload
+
 
 class ReportReader:
     def __init__(self, reports_root: Path) -> None:
@@ -13,7 +15,8 @@ class ReportReader:
 
     def _load_json(self, path: Path) -> dict[str, Any]:
         with path.open("r", encoding="utf-8") as fh:
-            return json.load(fh)
+            payload = json.load(fh)
+        return migrate_report_payload(payload, path=path)
 
     def _parse_datetime(self, raw: Any) -> Optional[datetime]:
         if not isinstance(raw, str) or not raw.strip():

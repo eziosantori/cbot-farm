@@ -71,9 +71,11 @@ class ReportReaderTestCase(unittest.TestCase):
     def test_get_run_supports_id_variants(self) -> None:
         by_stem = self.reader.get_run("run_20260217_000001_1")
         self.assertEqual(by_stem["run_id"], "run_20260217_000001_1")
+        self.assertEqual(by_stem["payload"]["report_kind"], "run_report")
 
         by_raw = self.reader.get_run("20260217_000001_1")
         self.assertEqual(by_raw["run_id"], "run_20260217_000001_1")
+        self.assertIn("schema_version", by_raw["payload"])
 
     def test_ingest_manifest_list_and_detail(self) -> None:
         manifests = self.reader.list_ingest_manifests(limit=10, offset=0)
@@ -93,6 +95,7 @@ class ReportReaderTestCase(unittest.TestCase):
 
         detail_stem = self.reader.get_ingest_manifest("manifest_20260217_000001")
         self.assertEqual(detail_stem["manifest_id"], "manifest_20260217_000001")
+        self.assertEqual(detail_stem["payload"]["report_kind"], "ingest_manifest")
 
         detail_raw = self.reader.get_ingest_manifest("20260217_000001")
         self.assertEqual(detail_raw["manifest_id"], "manifest_20260217_000001")

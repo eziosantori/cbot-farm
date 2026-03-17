@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from bots import list_strategies
+from cbot_farm.report_schema import migrate_report_payload
 
 STATES = [
     "draft",
@@ -63,7 +64,7 @@ class StrategyWorkflowService:
         for path in files:
             try:
                 with path.open("r", encoding="utf-8") as fh:
-                    payload = json.load(fh)
+                    payload = migrate_report_payload(json.load(fh), path=path)
             except Exception:
                 continue
             if str(payload.get("strategy_id") or "") != strategy_id:

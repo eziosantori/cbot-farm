@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Dict, Iterable, List, Optional
 
 from .config import REPORTS_DIR, ROOT
+from .report_schema import CURRENT_INGEST_MANIFEST_SCHEMA_VERSION, INGEST_MANIFEST_KIND
 
 
 def map_timeframe(tf: str) -> str:
@@ -192,6 +193,9 @@ def ingest_data(
     status = "ok" if failed_count == 0 else ("partial" if ok_count > 0 else "failed")
 
     manifest = {
+        "schema_version": CURRENT_INGEST_MANIFEST_SCHEMA_VERSION,
+        "report_kind": INGEST_MANIFEST_KIND,
+        "created_at": datetime.now(timezone.utc).isoformat(),
         "provider": provider,
         "status": status,
         "from": date_from,
