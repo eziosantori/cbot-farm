@@ -17,6 +17,7 @@ class ReportIndexServiceTestCase(unittest.TestCase):
         (self.reports_root / "ingest").mkdir(parents=True, exist_ok=True)
 
         run_1 = {
+            "created_at": "2026-02-17T00:00:00+00:00",
             "strategy": "S1",
             "strategy_id": "s1",
             "market": "forex",
@@ -33,6 +34,7 @@ class ReportIndexServiceTestCase(unittest.TestCase):
         (self.reports_root / "run_20260217_000001_1.json").write_text(json.dumps(run_1), encoding="utf-8")
 
         run_2 = {
+            "created_at": "2026-02-18T00:00:00+00:00",
             "strategy": {"name": "S2", "strategy_id": "s2"},
             "target": {"market": "indices", "symbol": "NAS100", "timeframe": "15m"},
             "backtest": {
@@ -107,12 +109,33 @@ class ReportIndexServiceTestCase(unittest.TestCase):
         self.assertEqual(failed["total"], 1)
         self.assertEqual(failed["items"][0]["strategy_id"], "s2")
 
+        narrowed = self.index.list_runs(
+            limit=10,
+            offset=0,
+            strategy_id="s1",
+            symbol="eurusd",
+            timeframe="1h",
+            from_at="2026-02-16T00:00:00+00:00",
+            to_at="2026-02-17T23:59:59+00:00",
+        )
+        self.assertEqual(narrowed["total"], 1)
+        self.assertEqual(narrowed["items"][0]["strategy_id"], "s1")
+
     def test_list_ingest_manifests(self) -> None:
         self.index.rebuild()
         manifests = self.index.list_ingest_manifests(limit=10, offset=0)
         self.assertEqual(manifests["total"], 1)
         self.assertEqual(manifests["items"][0]["ok"], 1)
         self.assertEqual(manifests["items"][0]["failed"], 1)
+
+        filtered = self.index.list_ingest_manifests(
+            limit=10,
+            offset=0,
+            status="ok",
+            from_at="2026-02-16T00:00:00+00:00",
+            to_at="2026-02-17T23:59:59+00:00",
+        )
+        self.assertEqual(filtered["total"], 1)
 
 
 if __name__ == "__main__":

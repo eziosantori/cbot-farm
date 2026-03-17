@@ -84,8 +84,10 @@ pnpm run check:all
 ## API Endpoints (current)
 - `GET /health`
 - `GET /runs`
+  - query: `limit`, `offset`, `market`, `status`, `strategy_id`, `symbol`, `timeframe`, `from`, `to`
 - `GET /runs/{run_id}`
 - `GET /ingest-manifests`
+  - query: `limit`, `offset`, `status`, `from`, `to`
 - `GET /ingest-manifests/{manifest_id}`
 - `GET /batches`
 - `GET /batches/{batch_id}`

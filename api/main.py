@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -51,6 +52,26 @@ app.add_middleware(
 )
 
 
+def _normalized_datetime_filter(raw: Optional[str]) -> Optional[str]:
+    if raw is None:
+        return None
+    text = str(raw).strip()
+    if not text:
+        return None
+    try:
+        normalized = text.replace("Z", "+00:00")
+        if "T" not in normalized:
+            normalized = f"{normalized}T00:00:00+00:00"
+        dt = datetime.fromisoformat(normalized)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        else:
+            dt = dt.astimezone(timezone.utc)
+        return dt.isoformat()
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=f"invalid datetime filter: {raw}") from exc
+
+
 @app.get("/health")
 def health() -> Dict[str, str]:
     return {"status": "ok"}
@@ -62,11 +83,38 @@ def runs(
     offset: int = Query(default=0, ge=0),
     market: Optional[str] = None,
     status: Optional[str] = None,
+    strategy_id: Optional[str] = None,
+    symbol: Optional[str] = None,
+    timeframe: Optional[str] = None,
+    from_at: Optional[str] = Query(default=None, alias="from"),
+    to_at: Optional[str] = Query(default=None, alias="to"),
 ) -> Dict[str, Any]:
+    from_at = _normalized_datetime_filter(from_at)
+    to_at = _normalized_datetime_filter(to_at)
     idx = index_service.status()
     if idx.get("ready") and not idx.get("stale"):
-        return index_service.list_runs(limit=limit, offset=offset, market=market, status=status)
-    return reader.list_runs(limit=limit, offset=offset, market=market, status=status)
+        return index_service.list_runs(
+            limit=limit,
+            offset=offset,
+            market=market,
+            status=status,
+            strategy_id=strategy_id,
+            symbol=symbol,
+            timeframe=timeframe,
+            from_at=from_at,
+            to_at=to_at,
+        )
+    return reader.list_runs(
+        limit=limit,
+        offset=offset,
+        market=market,
+        status=status,
+        strategy_id=strategy_id,
+        symbol=symbol,
+        timeframe=timeframe,
+        from_at=from_at,
+        to_at=to_at,
+    )
 
 
 @app.get("/runs/{run_id}")
@@ -82,11 +130,15 @@ def ingest_manifests(
     limit: int = Query(default=50, ge=1, le=500),
     offset: int = Query(default=0, ge=0),
     status: Optional[str] = None,
+    from_at: Optional[str] = Query(default=None, alias="from"),
+    to_at: Optional[str] = Query(default=None, alias="to"),
 ) -> Dict[str, Any]:
+    from_at = _normalized_datetime_filter(from_at)
+    to_at = _normalized_datetime_filter(to_at)
     idx = index_service.status()
     if idx.get("ready") and not idx.get("stale"):
-        return index_service.list_ingest_manifests(limit=limit, offset=offset, status=status)
-    return reader.list_ingest_manifests(limit=limit, offset=offset, status=status)
+        return index_service.list_ingest_manifests(limit=limit, offset=offset, status=status, from_at=from_at, to_at=to_at)
+    return reader.list_ingest_manifests(limit=limit, offset=offset, status=status, from_at=from_at, to_at=to_at)
 
 
 @app.get("/ingest-manifests/{manifest_id}")

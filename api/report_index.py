@@ -20,6 +20,20 @@ def _to_float(v: Any) -> Optional[float]:
     return None
 
 
+def _normalize_datetime_filter(raw: Optional[str]) -> Optional[str]:
+    if raw is None:
+        return None
+    text = str(raw).strip()
+    if not text:
+        return None
+    dt = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    else:
+        dt = dt.astimezone(timezone.utc)
+    return dt.isoformat()
+
+
 class Base(DeclarativeBase):
     pass
 
@@ -210,7 +224,14 @@ class ReportIndexService:
         offset: int = 0,
         market: Optional[str] = None,
         status: Optional[str] = None,
+        strategy_id: Optional[str] = None,
+        symbol: Optional[str] = None,
+        timeframe: Optional[str] = None,
+        from_at: Optional[str] = None,
+        to_at: Optional[str] = None,
     ) -> Dict[str, Any]:
+        from_filter = _normalize_datetime_filter(from_at)
+        to_filter = _normalize_datetime_filter(to_at)
         with Session(self.engine) as session:
             query = session.query(RunIndex)
 
@@ -218,6 +239,16 @@ class ReportIndexService:
                 query = query.filter(func.lower(RunIndex.market) == market.lower())
             if status:
                 query = query.filter(func.lower(RunIndex.status) == status.lower())
+            if strategy_id:
+                query = query.filter(func.lower(RunIndex.strategy_id) == strategy_id.lower())
+            if symbol:
+                query = query.filter(func.lower(RunIndex.symbol) == symbol.lower())
+            if timeframe:
+                query = query.filter(func.lower(RunIndex.timeframe) == timeframe.lower())
+            if from_filter:
+                query = query.filter(func.coalesce(RunIndex.run_at, RunIndex.indexed_at) >= from_filter)
+            if to_filter:
+                query = query.filter(func.coalesce(RunIndex.run_at, RunIndex.indexed_at) <= to_filter)
 
             total = int(query.count())
             rows = (
@@ -256,12 +287,20 @@ class ReportIndexService:
         limit: int = 50,
         offset: int = 0,
         status: Optional[str] = None,
+        from_at: Optional[str] = None,
+        to_at: Optional[str] = None,
     ) -> Dict[str, Any]:
+        from_filter = _normalize_datetime_filter(from_at)
+        to_filter = _normalize_datetime_filter(to_at)
         with Session(self.engine) as session:
             query = session.query(IngestManifestIndex)
 
             if status:
                 query = query.filter(func.lower(IngestManifestIndex.status) == status.lower())
+            if from_filter:
+                query = query.filter(func.coalesce(IngestManifestIndex.created_at, IngestManifestIndex.indexed_at) >= from_filter)
+            if to_filter:
+                query = query.filter(func.coalesce(IngestManifestIndex.created_at, IngestManifestIndex.indexed_at) <= to_filter)
 
             total = int(query.count())
             rows = (
