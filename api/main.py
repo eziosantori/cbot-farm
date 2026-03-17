@@ -13,6 +13,7 @@ from api.optimization import OptimizationService
 from api.report_index import ReportIndexService
 from api.report_reader import ReportReader
 from api.simulations import SimulationService
+from api.strategy_intake import StrategyIntakeService
 from api.strategy_workflow import StrategyWorkflowService
 
 
@@ -33,6 +34,11 @@ simulation_service = SimulationService(
 workflow_service = StrategyWorkflowService(
     storage_path=ROOT / "reports" / "strategy_workflow.json",
     reports_root=ROOT / "reports",
+)
+intake_service = StrategyIntakeService(
+    storage_dir=ROOT / "reports" / "strategy_intake",
+    universe_cfg=universe_cfg,
+    risk_cfg=risk_cfg,
 )
 
 app = FastAPI(title="cbot-farm API", version="0.2.0")
@@ -156,6 +162,36 @@ def strategy_workflow_transition(
         return {"strategy": item}
     except FileNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/strategy-intake/options")
+def strategy_intake_options() -> Dict[str, Any]:
+    return intake_service.options()
+
+
+@app.get("/strategy-intake")
+def list_strategy_intakes(
+    limit: int = Query(default=50, ge=1, le=500),
+    offset: int = Query(default=0, ge=0),
+    status: Optional[str] = None,
+) -> Dict[str, Any]:
+    return intake_service.list_intakes(limit=limit, offset=offset, status=status)
+
+
+@app.get("/strategy-intake/{intake_id}")
+def strategy_intake_detail(intake_id: str) -> Dict[str, Any]:
+    try:
+        return intake_service.get_intake(intake_id=intake_id)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/strategy-intake")
+def create_strategy_intake(payload: Dict[str, Any] = Body(default_factory=dict)) -> Dict[str, Any]:
+    try:
+        return {"intake": intake_service.create(payload)}
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 

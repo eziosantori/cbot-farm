@@ -7,6 +7,7 @@ import OptimizationPage from './pages/OptimizationPage'
 import BatchesPage from './pages/BatchesPage'
 import BatchDetailPage from './pages/BatchDetailPage'
 import SimulationsPage from './pages/SimulationsPage'
+import StrategyIntakePage from './pages/StrategyIntakePage'
 import WorkflowPage from './pages/WorkflowPage'
 
 export default function App(): JSX.Element {
@@ -19,6 +20,7 @@ export default function App(): JSX.Element {
       <Route path="/batches" element={<BatchesPage />} />
       <Route path="/batches/:batchId" element={<BatchDetailPage />} />
       <Route path="/simulations" element={<SimulationsPage />} />
+      <Route path="/intake" element={<StrategyIntakePage />} />
       <Route path="/workflow" element={<WorkflowPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

@@ -53,11 +53,16 @@ export async function apiRequest<T>(path: string, options: RequestInit = {}): Pr
     ...options
   })
 
+  const contentType = res.headers.get('content-type') || ''
   if (!res.ok) {
+    if (contentType.includes('application/json')) {
+      const body = (await res.json()) as { detail?: unknown }
+      const detail = typeof body.detail === 'string' ? body.detail : JSON.stringify(body.detail)
+      throw new Error(`${path} failed with status ${res.status}: ${detail}`)
+    }
     throw new Error(`${path} failed with status ${res.status}`)
   }
 
-  const contentType = res.headers.get('content-type') || ''
   if (!contentType.includes('application/json')) {
     const body = await res.text()
     if (body.trim().startsWith('<!doctype') || body.trim().startsWith('<html')) {

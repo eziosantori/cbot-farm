@@ -91,6 +91,10 @@ pnpm run check:all
 - `GET /batches/{batch_id}`
 - `GET /simulations/options`
 - `POST /simulations/run`
+- `GET /strategy-intake/options`
+- `GET /strategy-intake`
+- `GET /strategy-intake/{intake_id}`
+- `POST /strategy-intake`
 - `GET /strategy-workflow`
 - `POST /strategy-workflow/init`
 - `POST /strategy-workflow/{strategy_id}/transition`
@@ -122,6 +126,7 @@ pnpm run check:all
 - `/batches`
 - `/batches/:batchId`
 - `/simulations`
+- `/intake`
 - `/workflow`
 
 ## Docs

@@ -196,3 +196,61 @@ export type WorkflowBoardResponse = {
 export type WorkflowTransitionResponse = {
   strategy: JsonRecord
 }
+
+export type StrategyIntakeSummary = {
+  intake_id: string
+  created_at?: string | null
+  status: string
+  title: string
+  linked_strategy_id?: string | null
+  target_markets: string[]
+  target_timeframes: string[]
+  artifact_path: string
+}
+
+export type StrategyIntakeOptionsResponse = {
+  strategies: Record<string, string>
+  markets: Record<string, { symbols: string[]; timeframes: string[] }>
+  defaults: {
+    linked_strategy_id: string
+    target_markets: string[]
+    target_timeframes: string[]
+    risk_gates: {
+      max_drawdown_pct: number
+      min_sharpe: number
+      max_oos_degradation_pct: number
+    }
+  }
+}
+
+export type StrategyIntakeDetail = {
+  intake_id: string
+  created_at?: string | null
+  updated_at?: string | null
+  status: string
+  title: string
+  slug: string
+  linked_strategy_id?: string | null
+  thesis: string
+  notes: string
+  target_universe: {
+    markets: string[]
+    symbols: string[]
+    timeframes: string[]
+  }
+  risk_gates: {
+    max_drawdown_pct: number
+    min_sharpe: number
+    max_oos_degradation_pct: number
+  }
+  prompts: {
+    research_prompt: string
+    implementation_prompt: string
+    evaluation_prompt: string
+  }
+  artifact_path: string
+}
+
+export type StrategyIntakeCreateResponse = {
+  intake: StrategyIntakeDetail
+}

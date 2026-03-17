@@ -25,8 +25,8 @@ Recommended command:
 - Prefer incremental, production-ready changes to reduce future refactor cost.
 
 ## Project Status
-- Current phase: `M2 - Web UI Phase 2 (in progress)`
-- Last updated: `2026-02-20`
+- Current phase: `M3 - Reliability and Scale (in progress)`
+- Last updated: `2026-03-17`
 
 ## Milestone Checklist
 
@@ -70,7 +70,7 @@ Recommended command:
   - Completed: 2026-02-16
   - Notes: Added `scripts/backtrader_parity.py` with strict + directional parity statuses; latest run reported `directional_pass` for EMA Cross ATR on EURUSD 1h.
 
-### M2 - Web UI Platform (In Progress)
+### M2 - Web UI Platform (Completed)
 - [x] Bootstrap backend (`FastAPI`) in `api/`
   - Completed: 2026-02-17
   - Notes: Added `api/main.py` with base FastAPI app and health endpoint.
@@ -111,7 +111,9 @@ Recommended command:
 - [x] Add strategy workflow board (state machine + transitions)
   - Completed: 2026-02-24
   - Notes: Added `/strategy-workflow` APIs and `/workflow` UI with guarded state transitions and last-run context.
-- [ ] Add strategy intake UI for metadata/prompt capture
+- [x] Add strategy intake UI for metadata/prompt capture
+  - Completed: 2026-03-17
+  - Notes: Added `/strategy-intake` APIs, persistent intake artifacts under `reports/strategy_intake/`, and a TypeScript UI page for prompt/risk/universe capture.
 
 
 ### M3 - Reliability and Scale (Planned)
@@ -152,12 +154,12 @@ Recommended command:
 ## Active Task Board
 
 ### Now
-- [ ] Start M2.11: strategy intake UI metadata flow
+- [ ] Start M3.2: pagination and filtering optimizations on SQLite paths
 
 ### Next
-- [ ] Start M3.2: pagination and filtering optimizations on SQLite paths
 - [ ] Start exporter parity checks (`ctrader`, `pine`)
 - [ ] Resume M5.1: implement S1 Trend EMA Breakout as production bot module
+- [ ] Tighten `ema_cross_atr` acceptance gates after the latest batch improvements
 
 ### Blocked / Decisions Needed
 - [ ] Finalize UI design system choice (minimal custom vs component library)
@@ -209,3 +211,5 @@ Recommended command:
 - 2026-02-20: Completed M2.9 simulation launcher (API + UI) with manual parameter override flow.
 
 - 2026-02-24: Completed M2.10 strategy workflow board (API + UI) with guarded transitions.
+
+- 2026-03-17: Completed M2.11 strategy intake flow (API + UI) with persistent intake artifacts and generated LLM prompt bundles.

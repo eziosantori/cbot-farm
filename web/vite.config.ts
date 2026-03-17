@@ -10,6 +10,7 @@ export default defineConfig({
       '/runs': 'http://127.0.0.1:8000',
       '/batches': 'http://127.0.0.1:8000',
       '/simulations': 'http://127.0.0.1:8000',
+      '/strategy-intake': 'http://127.0.0.1:8000',
       '/strategy-workflow': 'http://127.0.0.1:8000',
       '/ingest-manifests': 'http://127.0.0.1:8000',
       '/optimization': 'http://127.0.0.1:8000',
