@@ -79,7 +79,10 @@ def run_cycle(
 
         now = datetime.now(timezone.utc)
         created_at = now.isoformat()
-        run_id = now.strftime("%Y%m%d_%H%M%S")
+        run_id = now.strftime("%Y%m%d_%H%M%S_%f")
+        target_market = markets_filter[0] if markets_filter and len(markets_filter) == 1 else "multi"
+        target_symbol = symbols_filter[0] if symbols_filter and len(symbols_filter) == 1 else "multi"
+        target_timeframe = timeframes_filter[0] if timeframes_filter and len(timeframes_filter) == 1 else None
         payload = {
             "schema_version": CURRENT_RUN_REPORT_SCHEMA_VERSION,
             "report_kind": RUN_REPORT_KIND,
@@ -90,8 +93,14 @@ def run_cycle(
             "ingest": ingest_state,
             "strategy": strategy.display_name,
             "strategy_id": strategy.strategy_id,
-            "market": markets_filter[0] if markets_filter and len(markets_filter) == 1 else "multi",
+            "market": target_market,
+            "symbol": target_symbol,
             "timeframes": timeframes_filter or ["5m", "15m", "1h"],
+            "target": {
+                "market": target_market,
+                "symbol": target_symbol,
+                "timeframe": target_timeframe,
+            },
             "params": params,
             "optimization": {
                 "mode": optimization_meta,

@@ -85,6 +85,44 @@ def rsi_series(values: List[float], period: int = 14) -> List[Optional[float]]:
     return rsi
 
 
+def macd_series(
+    values: List[float],
+    fast_period: int = 12,
+    slow_period: int = 26,
+    signal_period: int = 9,
+) -> tuple[List[Optional[float]], List[Optional[float]], List[Optional[float]]]:
+    if fast_period <= 0 or slow_period <= 0 or signal_period <= 0:
+        raise ValueError("MACD periods must be positive")
+    if fast_period >= slow_period:
+        raise ValueError("MACD fast period must be lower than slow period")
+
+    ema_fast = ema_series(values, fast_period)
+    ema_slow = ema_series(values, slow_period)
+
+    macd_line: List[Optional[float]] = [None] * len(values)
+    compact_macd: List[float] = []
+    compact_index: List[int] = []
+    for idx, (fast_value, slow_value) in enumerate(zip(ema_fast, ema_slow)):
+        if fast_value is None or slow_value is None:
+            continue
+        value = float(fast_value) - float(slow_value)
+        macd_line[idx] = value
+        compact_macd.append(value)
+        compact_index.append(idx)
+
+    signal_line: List[Optional[float]] = [None] * len(values)
+    histogram: List[Optional[float]] = [None] * len(values)
+    compact_signal = ema_series(compact_macd, signal_period)
+    for idx, signal_value in enumerate(compact_signal):
+        if signal_value is None:
+            continue
+        target_idx = compact_index[idx]
+        signal_line[target_idx] = signal_value
+        histogram[target_idx] = macd_line[target_idx] - signal_value
+
+    return macd_line, signal_line, histogram
+
+
 def adx_series(highs: List[float], lows: List[float], closes: List[float], period: int = 14) -> List[Optional[float]]:
     """
     Calculate Average Directional Index (ADX) using Wilder's method.

@@ -82,6 +82,10 @@ pnpm run test:unit
 pnpm run check:all
 ```
 
+Smoke coverage currently includes:
+- API route-function smoke checks in `tests/test_smoke_routes.py`
+- frontend route registration smoke checks backed by `web/src/route-manifest.json`
+
 ## API Endpoints (current)
 - `GET /health`
 - `GET /runs`

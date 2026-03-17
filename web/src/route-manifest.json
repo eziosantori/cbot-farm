@@ -1,0 +1,11 @@
+{
+  "dashboard": "/",
+  "runDetail": "/runs/:runId",
+  "manifestDetail": "/ingestion/:manifestId",
+  "optimization": "/optimization",
+  "batches": "/batches",
+  "batchDetail": "/batches/:batchId",
+  "simulations": "/simulations",
+  "intake": "/intake",
+  "workflow": "/workflow"
+}

@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import routeManifest from '../route-manifest.json'
 
 type NavItem = {
   to: string
@@ -14,24 +15,24 @@ const NAV_GROUPS: NavGroup[] = [
   {
     title: 'Observe',
     items: [
-      { to: '/', label: 'Dashboard' },
-      { to: '/batches', label: 'Batches' },
+      { to: routeManifest.dashboard, label: 'Dashboard' },
+      { to: routeManifest.batches, label: 'Batches' },
     ],
   },
   {
     title: 'Build',
     items: [
-      { to: '/intake', label: 'Strategy Intake' },
-      { to: '/optimization', label: 'Optimization' },
+      { to: routeManifest.intake, label: 'Strategy Intake' },
+      { to: routeManifest.optimization, label: 'Optimization' },
     ],
   },
   {
     title: 'Simulate',
-    items: [{ to: '/simulations', label: 'Simulations' }],
+    items: [{ to: routeManifest.simulations, label: 'Simulations' }],
   },
   {
     title: 'Govern',
-    items: [{ to: '/workflow', label: 'Workflow' }],
+    items: [{ to: routeManifest.workflow, label: 'Workflow' }],
   },
 ]
 

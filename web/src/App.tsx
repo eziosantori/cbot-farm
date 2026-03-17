@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 
 import AppShell from './components/AppShell'
+import routeManifest from './route-manifest.json'
 import DashboardPage from './pages/DashboardPage'
 import ManifestDetailPage from './pages/ManifestDetailPage'
 import RunDetailPage from './pages/RunDetailPage'
@@ -15,17 +16,17 @@ export default function App(): JSX.Element {
   return (
     <Routes>
       <Route element={<AppShell />}>
-        <Route path="/" element={<DashboardPage />} />
-        <Route path="/runs/:runId" element={<RunDetailPage />} />
-        <Route path="/ingestion/:manifestId" element={<ManifestDetailPage />} />
-        <Route path="/optimization" element={<OptimizationPage />} />
-        <Route path="/batches" element={<BatchesPage />} />
-        <Route path="/batches/:batchId" element={<BatchDetailPage />} />
-        <Route path="/simulations" element={<SimulationsPage />} />
-        <Route path="/intake" element={<StrategyIntakePage />} />
-        <Route path="/workflow" element={<WorkflowPage />} />
+        <Route path={routeManifest.dashboard} element={<DashboardPage />} />
+        <Route path={routeManifest.runDetail} element={<RunDetailPage />} />
+        <Route path={routeManifest.manifestDetail} element={<ManifestDetailPage />} />
+        <Route path={routeManifest.optimization} element={<OptimizationPage />} />
+        <Route path={routeManifest.batches} element={<BatchesPage />} />
+        <Route path={routeManifest.batchDetail} element={<BatchDetailPage />} />
+        <Route path={routeManifest.simulations} element={<SimulationsPage />} />
+        <Route path={routeManifest.intake} element={<StrategyIntakePage />} />
+        <Route path={routeManifest.workflow} element={<WorkflowPage />} />
       </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to={routeManifest.dashboard} replace />} />
     </Routes>
   )
 }

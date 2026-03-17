@@ -25,7 +25,7 @@ Recommended command:
 - Prefer incremental, production-ready changes to reduce future refactor cost.
 
 ## Project Status
-- Current phase: `M3 - Reliability and Scale (in progress)`
+- Current phase: `Workflow Validation And Strategy Iteration`
 - Last updated: `2026-03-17`
 
 ## Milestone Checklist
@@ -137,7 +137,9 @@ Recommended command:
 - [x] Add report schema versioning and migration helpers
   - Completed: 2026-03-17
   - Notes: Added `cbot_farm/report_schema.py`, migrated readers/indexers to normalized payloads, stamped new run/manifest writers with `schema_version`, and added `pnpm run reports:migrate`.
-- [ ] Add smoke tests for API and UI routes
+- [x] Add smoke tests for API and UI routes
+  - Completed: 2026-03-17
+  - Notes: Added route smoke coverage for API module handlers and frontend route manifest registration in `tests/test_smoke_routes.py`.
 
 ### M4 - Feedback Loop Validation (Planned)
 - [x] Define evaluation protocol for strategy iteration loop (inputs, gates, outputs)
@@ -169,12 +171,14 @@ Recommended command:
 ## Active Task Board
 
 ### Now
-- [ ] Start M3.4: smoke tests for API and UI routes
+- [ ] Start exporter parity checks (`ctrader`, `pine`)
+- [ ] Run `momentum_rider` refinement v2 on `EURUSD 1h` and `NAS100 1h`
 
 ### Next
-- [ ] Start exporter parity checks (`ctrader`, `pine`)
 - [ ] Resume M5.1: implement S1 Trend EMA Breakout as production bot module
 - [ ] Tighten `ema_cross_atr` acceptance gates after the latest batch improvements
+- [ ] Consider adding UI-level filters/pagination controls now that API support is in place
+- [ ] Connect intake artifacts directly to campaign creation for terminal-free orchestration
 
 ### Blocked / Decisions Needed
 - [ ] Finalize UI design system choice (minimal custom vs component library)
@@ -233,3 +237,5 @@ Recommended command:
 - 2026-03-17: Completed the remaining UI refresh work on intake, optimization, and simulations; M2A is now closed.
 - 2026-03-17: Completed M3.2 by extending SQLite/filesystem report listing filters and pagination semantics at the API layer.
 - 2026-03-17: Completed M3.3 by introducing canonical report schema migration helpers and versioned run/manifest writers.
+- 2026-03-17: Completed M3.4 with smoke coverage for API handler routes and frontend route registration.
+- 2026-03-17: Validated the intake-driven development loop on `momentum_rider` from `reports/strategy_intake/intake_20260317_084240_090608_momentum-rider.json`; first pass result is `iterate`, not `candidate`.

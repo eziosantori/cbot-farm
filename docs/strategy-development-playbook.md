@@ -19,6 +19,30 @@ At the end of every development iteration, update:
 
 ## Standard Workflow
 
+### Terminal-First Intake Workflow
+Use this workflow when the idea already exists as an intake artifact and the implementation loop is executed from terminal with Codex.
+
+1. Identify the intake artifact under `reports/strategy_intake/`.
+2. Read the thesis, target universe, and risk gates.
+3. Reduce the first validation scope to datasets that are actually present locally.
+4. Convert the intake into:
+   - a strategy brief in this document
+   - a canonical bot module in `bots/`
+   - a parameter space entry in `config/risk.json`
+   - unit tests for the touched strategy logic
+5. Run a first controlled validation on 1-2 scenarios.
+6. Evaluate gates and log the result in `Iteration Log`.
+7. Decide one of:
+   - `iterate`
+   - `reject`
+   - `promote_candidate`
+
+Recommended operator prompt:
+```text
+Use intake <intake_id>.
+Read the artifact, convert it into a canonical bot module, add tests and optimization space, run a first validation on locally available datasets, and return an explicit decision: iterate, reject, or promote_candidate.
+```
+
 ### Step 1 - Define Strategy Brief
 - Name and `strategy_id`
 - Market(s) and timeframe(s)
@@ -181,6 +205,26 @@ Output:
   - Min Sharpe: ≥1.2
   - OOS Degradation: ≤30%
 
+### Momentum Rider
+- `strategy_id`: `momentum_rider`
+- Name: Momentum Rider
+- Markets: Forex, Crypto, Equities, Indices
+- Timeframes: 1h
+- Thesis: Trade directional momentum only when price is already aligned with the fast/slow EMA stack, then require MACD crossover confirmation and RSI participation before entry. Use ATR-based stop and take-profit to normalize risk across markets.
+- Core indicators:
+  - EMA fast / EMA slow trend stack
+  - MACD line / signal crossover as momentum trigger
+  - RSI gate to confirm participation strength
+  - ATR for volatility-scaled exits
+- Risk model:
+  - Stop Loss: Entry ± ATR x `atr_mult_stop`
+  - Take Profit: Entry ± ATR x `atr_mult_take`
+  - Flip exit: allow reversal only when the opposite full entry condition is satisfied
+- Initial gates:
+  - Max Drawdown: ≤12%
+  - Min Sharpe: ≥1.2
+  - OOS Degradation: ≤30%
+
 ## Iteration Log
 
 ### Template (copy for each iteration)
@@ -258,6 +302,51 @@ Output:
   - Keep `strict` parity as hard gate for future engine alignment work
   - Use `directional` parity as baseline validation gate in current phase
   - Proceed with M2 UI/API implementation and expose parity status in dashboard
+
+---
+
+## Iteration 3: Intake-Driven Workflow Validation (`momentum_rider`)
+- Iteration ID: `momentum_rider_validation_v1`
+- Date: `2026-03-17`
+- Strategy ID: `momentum_rider`
+- Market/Timeframe: `forex/EURUSD/1h, indices/NAS100/1h`
+- Data window:
+  - `EURUSD 1h`: `2022-01-01` to `2024-12-31`
+  - `NAS100 1h`: `2024-01-01` to `2024-12-31`
+- Parameter set:
+  - Search space from `optimization.parameter_space.momentum_rider`
+  - First validation scope reduced to locally available high-quality datasets from the intake universe
+  - 8 iterations per scenario
+- Key metrics:
+  - Best `EURUSD 1h` run: `reports/run_20260317_114643_2.json`
+    - Return %: `-4.41`
+    - Max DD %: `4.97`
+    - Sharpe: `-0.54`
+    - OOS degradation %: `124.64`
+    - Trades: `149`
+  - Best `NAS100 1h` run: `reports/run_20260317_114702_2.json`
+    - Return %: `2.90`
+    - Max DD %: `5.33`
+    - Sharpe: `0.51`
+    - OOS degradation %: `144.87`
+    - Trades: `55`
+  - Best shared parameter pattern in this sweep:
+    - `ema_fast=15`
+    - `ema_slow=60`
+    - `macd_signal=6`
+    - `rsi_gate=60`
+    - `atr_mult_stop=2.5`
+    - `atr_mult_take=4.0`
+- Walk-forward summary:
+  - Drawdown remained inside the intake gate on both scenarios
+  - Sharpe failed the gate on both scenarios
+  - OOS degradation was far above the intake gate on both scenarios
+  - EURUSD remained structurally weak; NAS100 showed some profitability but still not robust enough
+- Decision: `iterate`
+- Next action:
+  - Add a stronger regime filter before entry to reduce noisy momentum crosses
+  - Prefer markets with confirmed local data coverage before widening the intake universe
+  - Run a second refinement pass on `EURUSD 1h` and `NAS100 1h` before any workflow transition above `research/backtest`
 
 ## Iteration 3: M4.4 Controlled Pilot Campaign
 - Iteration ID: `ema_cross_atr_m44_pilot_v1`
