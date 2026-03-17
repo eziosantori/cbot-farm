@@ -135,3 +135,4 @@ pnpm run check:all
 - `docs/autonomous-strategy-lab-v1.md`
 - `docs/system-flows.md`
 - `docs/ui-phase2-roadmap.md`
+- `docs/ui-visual-system.md`

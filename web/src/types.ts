@@ -39,6 +39,14 @@ export type HealthResponse = {
   status: string
 }
 
+export type IndexStatusResponse = {
+  ready?: boolean
+  stale?: boolean
+  runs_count?: number
+  manifests_count?: number
+  db_path?: string
+}
+
 export type RunDetailResponse = {
   run_id: string
   payload: JsonRecord

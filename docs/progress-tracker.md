@@ -25,7 +25,7 @@ Recommended command:
 - Prefer incremental, production-ready changes to reduce future refactor cost.
 
 ## Project Status
-- Current phase: `M3 - Reliability and Scale (in progress)`
+- Current phase: `M2A - UI Experience Refresh (in progress)`
 - Last updated: `2026-03-17`
 
 ## Milestone Checklist
@@ -115,6 +115,13 @@ Recommended command:
   - Completed: 2026-03-17
   - Notes: Added `/strategy-intake` APIs, persistent intake artifacts under `reports/strategy_intake/`, and a TypeScript UI page for prompt/risk/universe capture.
 
+### M2A - UI Experience Refresh (In Progress)
+- [x] Introduce visual system foundation and persistent app shell
+  - Completed: 2026-03-17
+  - Notes: Added `docs/ui-visual-system.md`, shared dashboard/app-shell components, and a refreshed navigation/layout model for the web app.
+- [ ] Refresh batch analytics and workflow pages on the new visual system
+- [ ] Polish intake, optimization, and simulations pages with the shared component set
+
 
 ### M3 - Reliability and Scale (Planned)
 - [x] Introduce SQLite index for reports
@@ -154,9 +161,11 @@ Recommended command:
 ## Active Task Board
 
 ### Now
-- [ ] Start M3.2: pagination and filtering optimizations on SQLite paths
+- [ ] Refresh batch analytics and workflow pages on the new visual system
 
 ### Next
+- [ ] Polish intake, optimization, and simulations pages with the shared component set
+- [ ] Start M3.2: pagination and filtering optimizations on SQLite paths
 - [ ] Start exporter parity checks (`ctrader`, `pine`)
 - [ ] Resume M5.1: implement S1 Trend EMA Breakout as production bot module
 - [ ] Tighten `ema_cross_atr` acceptance gates after the latest batch improvements
@@ -213,3 +222,4 @@ Recommended command:
 - 2026-02-24: Completed M2.10 strategy workflow board (API + UI) with guarded transitions.
 
 - 2026-03-17: Completed M2.11 strategy intake flow (API + UI) with persistent intake artifacts and generated LLM prompt bundles.
+- 2026-03-17: Started UI experience refresh with a new visual system, persistent shell, and redesigned dashboard pilot.

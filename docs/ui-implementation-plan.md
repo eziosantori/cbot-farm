@@ -101,3 +101,9 @@ See `docs/ui-phase2-roadmap.md` for the next delivery scope:
 - simulation launcher from UI
 - strategy workflow board/state transitions
 - strategy intake metadata flow
+
+## Phase 3 Extension
+See `docs/ui-visual-system.md` for the next delivery scope:
+- design tokens and persistent application shell
+- dashboard refresh as the first pilot page
+- progressive migration of batch/workflow/intake pages into the shared visual system
