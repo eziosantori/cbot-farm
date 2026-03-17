@@ -25,7 +25,7 @@ Recommended command:
 - Prefer incremental, production-ready changes to reduce future refactor cost.
 
 ## Project Status
-- Current phase: `M2A - UI Experience Refresh (in progress)`
+- Current phase: `M3 - Reliability and Scale (in progress)`
 - Last updated: `2026-03-17`
 
 ## Milestone Checklist
@@ -115,14 +115,16 @@ Recommended command:
   - Completed: 2026-03-17
   - Notes: Added `/strategy-intake` APIs, persistent intake artifacts under `reports/strategy_intake/`, and a TypeScript UI page for prompt/risk/universe capture.
 
-### M2A - UI Experience Refresh (In Progress)
+### M2A - UI Experience Refresh (Completed)
 - [x] Introduce visual system foundation and persistent app shell
   - Completed: 2026-03-17
   - Notes: Added `docs/ui-visual-system.md`, shared dashboard/app-shell components, and a refreshed navigation/layout model for the web app.
 - [x] Refresh batch analytics and workflow pages on the new visual system
   - Completed: 2026-03-17
   - Notes: Redesigned `/batches`, `/batches/:batchId`, and `/workflow` with badges, insight cards, scenario panels, and a real workflow board on the shared visual system.
-- [ ] Polish intake, optimization, and simulations pages with the shared component set
+- [x] Polish intake, optimization, and simulations pages with the shared component set
+  - Completed: 2026-03-17
+  - Notes: Rebuilt `/intake`, `/optimization`, and `/simulations` with shared headers, stat cards, panels, chips, preview blocks, and consistent operator-focused layouts.
 
 
 ### M3 - Reliability and Scale (Planned)
@@ -163,10 +165,9 @@ Recommended command:
 ## Active Task Board
 
 ### Now
-- [ ] Polish intake, optimization, and simulations pages with the shared component set
+- [ ] Start M3.2: pagination and filtering optimizations on SQLite paths
 
 ### Next
-- [ ] Start M3.2: pagination and filtering optimizations on SQLite paths
 - [ ] Start exporter parity checks (`ctrader`, `pine`)
 - [ ] Resume M5.1: implement S1 Trend EMA Breakout as production bot module
 - [ ] Tighten `ema_cross_atr` acceptance gates after the latest batch improvements
@@ -225,3 +226,4 @@ Recommended command:
 - 2026-03-17: Completed M2.11 strategy intake flow (API + UI) with persistent intake artifacts and generated LLM prompt bundles.
 - 2026-03-17: Started UI experience refresh with a new visual system, persistent shell, and redesigned dashboard pilot.
 - 2026-03-17: Refreshed batch analytics and workflow pages on the new visual system, replacing basic lists with operator-focused boards and scenario panels.
+- 2026-03-17: Completed the remaining UI refresh work on intake, optimization, and simulations; M2A is now closed.

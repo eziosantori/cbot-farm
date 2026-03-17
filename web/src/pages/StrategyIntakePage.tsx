@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { apiRequest, useFetch } from '../api'
+import Badge from '../components/Badge'
+import PageHeader from '../components/PageHeader'
+import StatCard from '../components/StatCard'
 import type {
   ListResponse,
   StrategyIntakeCreateResponse,
@@ -22,6 +25,23 @@ function formatDate(value: string | null | undefined): string {
   }
   const date = new Date(value)
   return Number.isNaN(date.getTime()) ? value : date.toLocaleString()
+}
+
+function ChoiceChip({
+  label,
+  active,
+  onToggle,
+}: {
+  label: string
+  active: boolean
+  onToggle: () => void
+}): JSX.Element {
+  return (
+    <label className={active ? 'choice-chip choice-chip--active' : 'choice-chip'}>
+      <input type="checkbox" checked={active} onChange={onToggle} />
+      <span>{label}</span>
+    </label>
+  )
 }
 
 export default function StrategyIntakePage(): JSX.Element {
@@ -122,105 +142,180 @@ export default function StrategyIntakePage(): JSX.Element {
   }
 
   return (
-    <main>
-      <header>
-        <h1>Strategy intake</h1>
-        <p>
-          Capture a strategy idea as a structured artifact for the LLM-driven implementation loop.{' '}
-          <Link to="/">Back to dashboard</Link>
-        </p>
-      </header>
+    <main className="page">
+      <PageHeader
+        eyebrow="Build"
+        title="Strategy intake"
+        description={<p>Capture a strategy thesis as a structured artifact the LLM loop can implement, test, and critique with clear constraints.</p>}
+        actions={
+          <div className="quick-actions">
+            <Link className="quick-actions__link" to="/workflow">
+              Open workflow
+            </Link>
+            <button onClick={() => void submit()} disabled={saving || options.loading}>
+              {saving ? 'Saving...' : 'Create intake artifact'}
+            </button>
+          </div>
+        }
+      />
 
-      <section className="card">
-        <div className="form-grid">
+      <section className="stat-grid">
+        <StatCard label="Linked bot" value={linkedStrategyId || 'new idea'} tone="accent" detail="Attach to an existing bot or create a fresh thesis." />
+        <StatCard label="Markets" value={String(targetMarkets.length)} detail={targetMarkets.join(', ') || 'Select at least one market.'} />
+        <StatCard label="Timeframes" value={String(targetTimeframes.length)} detail={targetTimeframes.join(', ') || 'Select at least one timeframe.'} />
+        <StatCard label="Recent artifacts" value={String(history.data?.total ?? 0)} detail="Saved strategy briefs available for later implementation." />
+      </section>
+
+      <section className="panel-grid">
+        <section className="surface-card">
+          <div className="surface-card__header">
+            <div>
+              <p className="surface-card__eyebrow">Strategy brief</p>
+              <h2>Core thesis</h2>
+            </div>
+            <Badge label={result ? result.status : 'draft'} tone={result ? 'success' : 'neutral'} />
+          </div>
+
+          <div className="form-grid">
+            <label>
+              Idea title
+              <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Trend breakout with session filter" />
+            </label>
+
+            <label>
+              Linked bot module
+              <select value={linkedStrategyId} onChange={(e) => setLinkedStrategyId(e.target.value)}>
+                <option value="">New strategy idea</option>
+                {Object.entries(options.data?.strategies || {}).map(([id, name]) => (
+                  <option key={id} value={id}>
+                    {id} - {name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
           <label>
-            Idea title
-            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Trend breakout with session filter" />
+            Thesis
+            <textarea
+              value={thesis}
+              onChange={(e) => setThesis(e.target.value)}
+              rows={6}
+              placeholder="Describe the edge, entry logic, exit logic, and why the market inefficiency should exist."
+            />
           </label>
 
           <label>
-            Linked bot module
-            <select value={linkedStrategyId} onChange={(e) => setLinkedStrategyId(e.target.value)}>
-              <option value="">New strategy idea</option>
-              {Object.entries(options.data?.strategies || {}).map(([id, name]) => (
-                <option key={id} value={id}>
-                  {id} - {name}
-                </option>
+            Notes for the loop
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={4}
+              placeholder="Include market caveats, implementation hints, or constraints."
+            />
+          </label>
+
+          {error ? <p className="error">{error}</p> : null}
+        </section>
+
+        <section className="surface-card">
+          <div className="surface-card__header">
+            <div>
+              <p className="surface-card__eyebrow">Artifact preview</p>
+              <h2>Latest generated bundle</h2>
+            </div>
+          </div>
+
+          {result ? (
+            <div className="section-stack">
+              <div className="result-grid">
+                <div>
+                  <span>Intake id</span>
+                  <strong className="mono-text">{result.intake_id}</strong>
+                </div>
+                <div>
+                  <span>Status</span>
+                  <strong>{result.status}</strong>
+                </div>
+              </div>
+              <div className="card">
+                <p>
+                  <strong>Artifact path:</strong> <span className="mono-text">{result.artifact_path}</span>
+                </p>
+                <pre>{JSON.stringify(result.prompts, null, 2)}</pre>
+              </div>
+            </div>
+          ) : (
+            <p className="subtle-text">Create an intake artifact to preview the generated prompt bundle and saved metadata.</p>
+          )}
+        </section>
+      </section>
+
+      <section className="surface-card">
+        <div className="surface-card__header">
+          <div>
+            <p className="surface-card__eyebrow">Targets</p>
+            <h2>Initial research universe</h2>
+          </div>
+        </div>
+
+        <div className="section-stack">
+          <div>
+            <p><strong>Markets</strong></p>
+            <div className="choice-grid">
+              {marketIds.map((marketId) => (
+                <ChoiceChip
+                  key={marketId}
+                  label={marketId}
+                  active={targetMarkets.includes(marketId)}
+                  onToggle={() => setTargetMarkets((current) => toggleValue(current, marketId))}
+                />
               ))}
-            </select>
-          </label>
-        </div>
-
-        <label>
-          Thesis
-          <textarea
-            value={thesis}
-            onChange={(e) => setThesis(e.target.value)}
-            rows={5}
-            style={{ width: '100%' }}
-            placeholder="Describe the edge, entry logic, exit logic, and why the market inefficiency should exist."
-          />
-        </label>
-
-        <div className="card" style={{ marginTop: '16px' }}>
-          <h2>Targets</h2>
-          <p>Select the first universe the loop should explore.</p>
-
-          <p>
-            <strong>Markets</strong>
-          </p>
-          <div className="kpis">
-            {marketIds.map((marketId) => (
-              <label className="card" key={marketId}>
-                <input
-                  type="checkbox"
-                  checked={targetMarkets.includes(marketId)}
-                  onChange={() => setTargetMarkets((current) => toggleValue(current, marketId))}
-                />
-                {marketId}
-              </label>
-            ))}
+            </div>
           </div>
 
-          <p>
-            <strong>Timeframes</strong>
-          </p>
-          <div className="kpis">
-            {availableTimeframes.map((timeframe) => (
-              <label className="card" key={timeframe}>
-                <input
-                  type="checkbox"
-                  checked={targetTimeframes.includes(timeframe)}
-                  onChange={() => setTargetTimeframes((current) => toggleValue(current, timeframe))}
+          <div>
+            <p><strong>Timeframes</strong></p>
+            <div className="choice-grid">
+              {availableTimeframes.map((timeframe) => (
+                <ChoiceChip
+                  key={timeframe}
+                  label={timeframe}
+                  active={targetTimeframes.includes(timeframe)}
+                  onToggle={() => setTargetTimeframes((current) => toggleValue(current, timeframe))}
                 />
-                {timeframe}
-              </label>
-            ))}
+              ))}
+            </div>
           </div>
 
-          <p>
-            <strong>Symbols</strong>
-          </p>
-          <div className="kpis">
-            {availableSymbols.length === 0 ? (
-              <p>No symbols available until at least one market is selected.</p>
-            ) : (
-              availableSymbols.map((symbol) => (
-                <label className="card" key={symbol}>
-                  <input
-                    type="checkbox"
-                    checked={targetSymbols.includes(symbol)}
-                    onChange={() => setTargetSymbols((current) => toggleValue(current, symbol))}
+          <div>
+            <p><strong>Symbols</strong></p>
+            <div className="choice-grid">
+              {availableSymbols.length === 0 ? (
+                <p className="subtle-text">No symbols available until at least one market is selected.</p>
+              ) : (
+                availableSymbols.map((symbol) => (
+                  <ChoiceChip
+                    key={symbol}
+                    label={symbol}
+                    active={targetSymbols.includes(symbol)}
+                    onToggle={() => setTargetSymbols((current) => toggleValue(current, symbol))}
                   />
-                  {symbol}
-                </label>
-              ))
-            )}
+                ))
+              )}
+            </div>
           </div>
         </div>
+      </section>
 
-        <div className="card" style={{ marginTop: '16px' }}>
-          <h2>Risk gates</h2>
+      <section className="panel-grid">
+        <section className="surface-card">
+          <div className="surface-card__header">
+            <div>
+              <p className="surface-card__eyebrow">Risk constraints</p>
+              <h2>Acceptance gates</h2>
+            </div>
+          </div>
           <div className="form-grid">
             <label>
               Max drawdown %
@@ -240,102 +335,58 @@ export default function StrategyIntakePage(): JSX.Element {
               />
             </label>
           </div>
-        </div>
+        </section>
 
-        <label style={{ display: 'block', marginTop: '16px' }}>
-          Notes for the loop
-          <textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={3}
-            style={{ width: '100%' }}
-            placeholder="Include market caveats, implementation hints, or constraints."
-          />
-        </label>
-
-        <div className="card" style={{ marginTop: '16px' }}>
-          <h2>Prompt overrides</h2>
-          <p>Leave these blank to let the backend generate prompts automatically from the intake.</p>
-          <label>
-            Research prompt
-            <textarea value={researchPrompt} onChange={(e) => setResearchPrompt(e.target.value)} rows={4} style={{ width: '100%' }} />
-          </label>
-          <label>
-            Implementation prompt
-            <textarea
-              value={implementationPrompt}
-              onChange={(e) => setImplementationPrompt(e.target.value)}
-              rows={4}
-              style={{ width: '100%' }}
-            />
-          </label>
-          <label>
-            Evaluation prompt
-            <textarea
-              value={evaluationPrompt}
-              onChange={(e) => setEvaluationPrompt(e.target.value)}
-              rows={4}
-              style={{ width: '100%' }}
-            />
-          </label>
-        </div>
-
-        <p>
-          <button onClick={() => void submit()} disabled={saving || options.loading}>
-            {saving ? 'Saving...' : 'Create intake artifact'}
-          </button>
-        </p>
-
-        {error ? <p className="error">{error}</p> : null}
+        <section className="surface-card">
+          <div className="surface-card__header">
+            <div>
+              <p className="surface-card__eyebrow">Prompt overrides</p>
+              <h2>LLM instruction bundle</h2>
+            </div>
+          </div>
+          <div className="section-stack">
+            <label>
+              Research prompt
+              <textarea value={researchPrompt} onChange={(e) => setResearchPrompt(e.target.value)} rows={4} />
+            </label>
+            <label>
+              Implementation prompt
+              <textarea value={implementationPrompt} onChange={(e) => setImplementationPrompt(e.target.value)} rows={4} />
+            </label>
+            <label>
+              Evaluation prompt
+              <textarea value={evaluationPrompt} onChange={(e) => setEvaluationPrompt(e.target.value)} rows={4} />
+            </label>
+          </div>
+        </section>
       </section>
 
-      {result ? (
-        <section className="card">
-          <h2>Latest artifact</h2>
-          <p>
-            <strong>Intake:</strong> {result.intake_id}
-          </p>
-          <p>
-            <strong>Artifact path:</strong> {result.artifact_path}
-          </p>
-          <p>
-            <strong>Status:</strong> {result.status}
-          </p>
-          <p>
-            <strong>Generated prompts:</strong>
-          </p>
-          <pre>{JSON.stringify(result.prompts, null, 2)}</pre>
-        </section>
-      ) : null}
-
-      <section>
-        <h2>Recent intake artifacts</h2>
+      <section className="surface-card">
+        <div className="surface-card__header">
+          <div>
+            <p className="surface-card__eyebrow">History</p>
+            <h2>Recent intake artifacts</h2>
+          </div>
+          <Badge label={history.loading ? 'loading' : `${history.data?.items?.length || 0} visible`} tone="neutral" />
+        </div>
         {history.error ? <p className="error">{history.error}</p> : null}
         {!history.data?.items?.length ? (
-          <p>No strategy intake artifacts created yet.</p>
+          <p className="subtle-text">No strategy intake artifacts created yet.</p>
         ) : (
-          history.data.items.map((item) => (
-            <div className="card" key={item.intake_id} style={{ marginBottom: '12px' }}>
-              <p>
-                <strong>{item.title}</strong> - {item.status}
-              </p>
-              <p>
-                <strong>ID:</strong> {item.intake_id}
-              </p>
-              <p>
-                <strong>Linked strategy:</strong> {item.linked_strategy_id || 'new strategy idea'}
-              </p>
-              <p>
-                <strong>Targets:</strong> {item.target_markets.join(', ') || '-'} | {item.target_timeframes.join(', ') || '-'}
-              </p>
-              <p>
-                <strong>Created:</strong> {formatDate(item.created_at)}
-              </p>
-              <p>
-                <strong>Artifact:</strong> {item.artifact_path}
-              </p>
-            </div>
-          ))
+          <div className="history-list">
+            {history.data.items.map((item) => (
+              <div className="card history-card" key={item.intake_id}>
+                <p>
+                  <strong>{item.title}</strong> <Badge label={item.status} tone="accent" />
+                </p>
+                <p><strong>ID:</strong> <span className="mono-text">{item.intake_id}</span></p>
+                <p><strong>Linked strategy:</strong> {item.linked_strategy_id || 'new strategy idea'}</p>
+                <p><strong>Targets:</strong> {item.target_markets.join(', ') || '-'} | {item.target_timeframes.join(', ') || '-'}</p>
+                <p><strong>Created:</strong> {formatDate(item.created_at)}</p>
+                <p><strong>Artifact:</strong> <span className="mono-text">{item.artifact_path}</span></p>
+              </div>
+            ))}
+          </div>
         )}
       </section>
     </main>
