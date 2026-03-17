@@ -49,6 +49,20 @@ class BaseBotStrategy(ABC):
     ) -> tuple[float, float]:
         """Return (stop_price, take_price) for the new position."""
 
+    def update_risk_levels(
+        self,
+        i: int,
+        position: int,
+        stop_price: float,
+        take_price: float,
+        open_trade: dict,
+        bars: List[Dict[str, float]],
+        indicators: dict,
+        params: dict,
+    ) -> tuple[float, float]:
+        """Optionally adjust active stop/take levels for an open trade."""
+        return stop_price, take_price
+
     def default_trade_cost(self, market: Optional[str], timeframe: Optional[str]) -> float:
         """Per-side transaction cost (fractional), override for market-specific profiles."""
         return 0.0002

@@ -125,6 +125,16 @@ Smoke coverage currently includes:
 - `GET /campaigns/{campaign_id}/artifacts`
 - `POST /export/{campaign_id}/{target}`
 
+Exporter note:
+- exporter v1 now generates real code artifacts for supported strategies (`ema_cross_atr`, `momentum_rider`)
+- target values: `ctrader`, `pine`
+- the campaign must contain `strategy_id` and `params`
+- unsupported or incomplete campaigns still generate an export manifest with diagnostics
+
+Exporter parity:
+- run `pnpm run parity:export` to validate exporter contract/code parity for `ema_cross_atr`
+- latest example artifact: `reports/parity/export_parity_ema_cross_atr_20260317_153417.json`
+
 ## Web Routes
 - `/`
 - `/runs/:runId`

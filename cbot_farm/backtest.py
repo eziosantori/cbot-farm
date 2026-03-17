@@ -376,6 +376,20 @@ def run_real_backtest(
             exit_price = None
             exit_reason = None
 
+            if stop_price is not None and take_price is not None and open_trade is not None:
+                stop_price, take_price = strategy.update_risk_levels(
+                    i=i,
+                    position=position,
+                    stop_price=float(stop_price),
+                    take_price=float(take_price),
+                    open_trade=open_trade,
+                    bars=bars,
+                    indicators=indicators,
+                    params=params,
+                )
+                open_trade["stop_price"] = round(float(stop_price), 6)
+                open_trade["take_price"] = round(float(take_price), 6)
+
             if position == 1 and stop_price is not None and take_price is not None:
                 if low <= stop_price:
                     exit_price = stop_price

@@ -146,7 +146,7 @@ Track at campaign and iteration level:
 - `M4.2` Orchestrator v1 and campaign persistence.
 - `M4.3` Evaluator/Critic loop with stop rules.
 - `M4.4` Pilot campaign on `ema_cross_atr`.
-- `M4.5` Exporter v1 for cTrader and Pine.
+- `M4.5` Exporter v1 for cTrader and Pine. Completed on `2026-03-17` for the supported canonical subset.
 
 ## Definition of Done (M4)
 - Autonomous loop executes unattended for configured budget.

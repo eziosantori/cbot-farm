@@ -16,6 +16,7 @@
     "reports:migrate": "python3 scripts/migrate_reports.py --write",
     "list:strategies": "python3 -m cbot_farm.cli --list-strategies",
     "parity:backtrader": "python3 scripts/backtrader_parity.py --strategy ema_cross_atr --market forex --symbol EURUSD --timeframe 1h --iteration 1",
+    "parity:export": "python3 scripts/export_parity.py --strategy ema_cross_atr --target all --iteration 1",
     "api:install": "python3 -m pip install -r api/requirements.txt",
     "api:dev": "python3 -m uvicorn api.main:app --reload --port 8000",
     "api:check": "python3 -m py_compile api/*.py",

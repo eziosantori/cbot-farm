@@ -175,14 +175,38 @@
           "rsi_gate": {
             "enabled": true,
             "type": "int",
-            "min": 52,
-            "max": 60,
+            "min": 56,
+            "max": 64,
+            "step": 4
+          },
+          "adx_period": {
+            "enabled": false,
+            "type": "int",
+            "value": 14
+          },
+          "min_adx": {
+            "enabled": true,
+            "type": "int",
+            "min": 18,
+            "max": 26,
             "step": 4
           },
           "atr_period": {
             "enabled": false,
             "type": "int",
             "value": 14
+          },
+          "atr_vol_window": {
+            "enabled": false,
+            "type": "int",
+            "value": 50
+          },
+          "atr_vol_ratio_max": {
+            "enabled": true,
+            "type": "float",
+            "min": 1.4,
+            "max": 1.8,
+            "step": 0.2
           },
           "atr_mult_stop": {
             "enabled": true,
@@ -194,8 +218,8 @@
           "atr_mult_take": {
             "enabled": true,
             "type": "float",
-            "min": 2.0,
-            "max": 4.0,
+            "min": 2.5,
+            "max": 4.5,
             "step": 0.5
           }
         }

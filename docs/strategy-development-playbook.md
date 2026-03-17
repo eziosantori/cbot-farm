@@ -348,6 +348,186 @@ Output:
   - Prefer markets with confirmed local data coverage before widening the intake universe
   - Run a second refinement pass on `EURUSD 1h` and `NAS100 1h` before any workflow transition above `research/backtest`
 
+---
+
+## Iteration 4: `momentum_rider` Regime Filter Refinement
+- Iteration ID: `momentum_rider_validation_v2`
+- Date: `2026-03-17`
+- Strategy ID: `momentum_rider`
+- Market/Timeframe: `forex/EURUSD/1h, indices/NAS100/1h`
+- Data window:
+  - `EURUSD 1h`: `2022-01-01` to `2024-12-31`
+  - `NAS100 1h`: `2024-01-01` to `2024-12-31`
+- Parameter set:
+  - Added regime filters:
+    - MACD zero-line alignment
+    - `min_adx`
+    - `atr_vol_ratio_max`
+  - Expanded search controls now include:
+    - `rsi_gate`
+    - `min_adx`
+    - `atr_vol_ratio_max`
+    - `atr_mult_stop`
+    - `atr_mult_take`
+  - 24 iterations per scenario
+- Key metrics:
+  - Best `EURUSD 1h` run: `reports/run_20260317_131315_256472_2.json`
+    - Return %: `-0.15`
+    - Max DD %: `4.34`
+    - Sharpe: `0.00`
+    - OOS degradation %: `81.68`
+    - Trades: `112`
+  - Best `NAS100 1h` run: `reports/run_20260317_131325_727565_12.json`
+    - Return %: `5.50`
+    - Max DD %: `3.06`
+    - Sharpe: `1.15`
+    - OOS degradation %: `90.85`
+    - Trades: `44`
+  - Best `NAS100 1h` parameter set:
+    - `ema_fast=15`
+    - `ema_slow=50`
+    - `macd_signal=6`
+    - `rsi_gate=60`
+    - `min_adx=22`
+    - `atr_vol_ratio_max=1.8`
+    - `atr_mult_stop=2.5`
+    - `atr_mult_take=2.5`
+- Walk-forward summary:
+  - `EURUSD 1h`: materially improved from v1, but still not profitable and still too weak OOS
+  - `NAS100 1h`: stronger return, lower drawdown, lower trade count, and Sharpe close to gate
+  - OOS degradation remains the blocking metric on both scenarios
+- Decision: `iterate`
+- Next action:
+  - Keep `NAS100 1h` as the lead validation scenario
+  - Reduce `EURUSD 1h` priority until a more robust regime or session filter is added
+  - Add one more selective filter layer before considering a workflow move to `candidate`
+
+---
+
+## Iteration 5: `momentum_rider` Extension Filter Probe
+- Iteration ID: `momentum_rider_validation_v3`
+- Date: `2026-03-17`
+- Strategy ID: `momentum_rider`
+- Market/Timeframe: `indices/NAS100/1h`
+- Data window: `2024-01-01` to `2024-12-31`
+- Parameter set:
+  - Added temporary `max_ema_gap_atr` filter to avoid entries too far from the fast EMA
+  - 24 iterations on the lead scenario only
+- Key metrics:
+  - Best run: `reports/run_20260317_131705_110011_15.json`
+    - Return %: `1.31`
+    - Max DD %: `2.19`
+    - Sharpe: `0.60`
+    - OOS degradation %: `114.74`
+    - Trades: `26`
+- Walk-forward summary:
+  - The extension filter reduced trade count and drawdown further
+  - It also reduced return and Sharpe materially versus v2
+  - OOS degradation remained unacceptable
+- Decision: `reject`
+- Next action:
+  - Keep v2 as the active baseline
+  - Do not keep `max_ema_gap_atr` in the production parameter space
+  - Explore a more structural filter next (session filter or higher-timeframe regime context)
+
+---
+
+## Iteration 6: `momentum_rider` Session Filter Probe
+- Iteration ID: `momentum_rider_validation_v4`
+- Date: `2026-03-17`
+- Strategy ID: `momentum_rider`
+- Market/Timeframe: `indices/NAS100/1h`
+- Data window: `2024-01-01` to `2024-12-31`
+- Parameter set:
+  - Added temporary UTC entry session filter with:
+    - `session_start_hour`
+    - `session_end_hour`
+  - 24 iterations on the lead scenario only
+- Key metrics:
+  - Best score run: `reports/run_20260317_132225_061716_14.json`
+    - Return %: `1.16`
+    - Max DD %: `3.36`
+    - Sharpe: `0.35`
+    - OOS degradation %: `102.09`
+    - Trades: `32`
+  - Best Sharpe run: `reports/run_20260317_132224_726816_9.json`
+    - Return %: `2.06`
+    - Max DD %: `5.92`
+    - Sharpe: `0.43`
+    - OOS degradation %: `103.05`
+    - Trades: `23`
+- Walk-forward summary:
+  - The session filter reduced trade count materially
+  - Return, Sharpe, and OOS behavior all remained worse than the v2 baseline
+  - The best v2 `NAS100 1h` result is still stronger on every meaningful promotion metric
+- Decision: `reject`
+- Next action:
+  - Keep v2 as the active baseline
+  - Do not keep session filter parameters in the active search space
+  - If we continue, the next structural experiment should use higher-timeframe context rather than narrower intraday timing
+
+---
+
+## Iteration 7: `momentum_rider` Higher-Timeframe Context Probe
+- Iteration ID: `momentum_rider_validation_v5`
+- Date: `2026-03-17`
+- Strategy ID: `momentum_rider`
+- Market/Timeframe: `indices/NAS100/1h`
+- Data window: `2024-01-01` to `2024-12-31`
+- Parameter set:
+  - Added temporary higher-timeframe regime context:
+    - completed `4h` close
+    - completed `4h EMA(20)`
+  - Longs allowed only when `4h close > 4h EMA`
+  - Shorts allowed only when `4h close < 4h EMA`
+  - 24 iterations on the lead scenario only
+- Key metrics:
+  - Best run: `reports/run_20260317_132820_410924_12.json`
+    - Return %: `5.50`
+    - Max DD %: `3.06`
+    - Sharpe: `1.15`
+    - OOS degradation %: `90.85`
+    - Trades: `44`
+- Walk-forward summary:
+  - The best result matched the v2 baseline exactly
+  - The higher-timeframe regime filter did not improve any promotion metric on the lead scenario
+  - Additional complexity is not justified without measurable improvement
+- Decision: `reject`
+- Next action:
+  - Keep v2 as the active baseline
+  - Do not keep higher-timeframe regime parameters in the active search space
+  - If we continue, the next experiments should target exit logic or more explicit OOS robustness rules rather than extra entry filters
+
+---
+
+## Iteration 8: `momentum_rider` Dynamic Exit Probe
+- Iteration ID: `momentum_rider_validation_v6`
+- Date: `2026-03-17`
+- Strategy ID: `momentum_rider`
+- Market/Timeframe: `indices/NAS100/1h`
+- Data window: `2024-01-01` to `2024-12-31`
+- Parameter set:
+  - Added temporary runtime exit management using:
+    - break-even trigger in ATR units
+    - ATR trailing stop anchored to fast EMA
+  - 24 iterations on the lead scenario only
+- Key metrics:
+  - Best run: `reports/run_20260317_135929_263734_8.json`
+    - Return %: `-5.04`
+    - Max DD %: `5.61`
+    - Sharpe: `-1.37`
+    - OOS degradation %: `115.57`
+    - Trades: `64`
+- Walk-forward summary:
+  - The dynamic exit probe materially worsened return, Sharpe, and OOS behavior
+  - Trade count also increased instead of becoming more selective
+  - The runtime exit hook remains useful at engine level, but this specific exit policy is not suitable for `momentum_rider`
+- Decision: `reject`
+- Next action:
+  - Keep v2 as the active baseline
+  - Do not keep break-even/trailing parameters in the active `momentum_rider` search space
+  - Reuse the new runtime exit hook only for future strategies or different exit designs
+
 ## Iteration 3: M4.4 Controlled Pilot Campaign
 - Iteration ID: `ema_cross_atr_m44_pilot_v1`
 - Date: `2026-02-19`

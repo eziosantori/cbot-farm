@@ -45,21 +45,59 @@ class CampaignsTestCase(unittest.TestCase):
         cancelled = self.orchestrator.cancel(campaign_id, "manual cancel")
         self.assertEqual(cancelled["status"], "cancelled")
 
-    def test_export_request_creates_placeholder_artifact(self) -> None:
-        campaign = self.orchestrator.create({"name": "exp-campaign"})
+    def test_export_request_generates_code_artifacts_for_supported_strategy(self) -> None:
+        campaign = self.orchestrator.create(
+            {
+                "name": "exp-campaign",
+                "strategy_id": "ema_cross_atr",
+                "params": {
+                    "ema_fast": 20,
+                    "ema_slow": 50,
+                    "atr_period": 14,
+                    "atr_mult_stop": 1.5,
+                    "atr_mult_take": 2.0,
+                    "rsi_period": 14,
+                    "rsi_gate": 55,
+                    "atr_vol_window": 50,
+                    "atr_vol_ratio_max": 1.8,
+                },
+            }
+        )
         campaign_id = campaign["campaign_id"]
 
         result = self.orchestrator.request_export(campaign_id, "ctrader")
         self.assertEqual(result["target"], "ctrader")
-        self.assertEqual(result["status"], "queued")
+        self.assertEqual(result["status"], "generated")
 
         exports = self.store.list_artifacts(campaign_id)["exports"]
-        self.assertEqual(len(exports), 1)
-        self.assertTrue(exports[0]["path"].startswith("exports/ctrader_request_"))
+        self.assertEqual(len(exports), 2)
+        export_paths = [item["path"] for item in exports]
+        self.assertTrue(any(path.endswith(".cs") for path in export_paths))
+        self.assertTrue(any(path.startswith("exports/ctrader_export_") for path in export_paths))
 
-        export_file = self.store.exports_dir(campaign_id) / Path(exports[0]["path"]).name
+        export_file = self.store.exports_dir(campaign_id) / result["manifest_file"]
         payload = json.loads(export_file.read_text())
         self.assertEqual(payload["campaign_id"], campaign_id)
+        self.assertEqual(payload["strategy_id"], "ema_cross_atr")
+        self.assertEqual(payload["status"], "generated")
+        self.assertEqual(len(payload["files"]), 1)
+        code_file = self.store.exports_dir(campaign_id) / payload["files"][0]
+        self.assertTrue(code_file.exists())
+        self.assertIn("class EmaCrossAtrBot", code_file.read_text())
+
+    def test_export_request_returns_diagnostics_when_campaign_is_incomplete(self) -> None:
+        campaign = self.orchestrator.create({"name": "exp-campaign-incomplete"})
+        campaign_id = campaign["campaign_id"]
+
+        result = self.orchestrator.request_export(campaign_id, "pine")
+        self.assertEqual(result["target"], "pine")
+        self.assertEqual(result["status"], "blocked")
+        self.assertTrue(any("missing strategy_id" in item for item in result["diagnostics"]))
+
+        export_file = self.store.exports_dir(campaign_id) / result["manifest_file"]
+        payload = json.loads(export_file.read_text())
+        self.assertEqual(payload["status"], "blocked")
+        self.assertEqual(payload["files"], [])
 
     def test_evaluate_iteration_promotes_when_all_gates_pass(self) -> None:
         campaign = self.orchestrator.create(

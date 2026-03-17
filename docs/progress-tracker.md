@@ -25,7 +25,7 @@ Recommended command:
 - Prefer incremental, production-ready changes to reduce future refactor cost.
 
 ## Project Status
-- Current phase: `Workflow Validation And Strategy Iteration`
+- Current phase: `Engine Development And Export Flow`
 - Last updated: `2026-03-17`
 
 ## Milestone Checklist
@@ -160,6 +160,9 @@ Recommended command:
 - [x] Produce validation report and go/no-go criteria for scaling to other strategies
   - Completed: 2026-02-20
   - Notes: Added `docs/m44-validation-report.md` with criteria matrix and verdict `no-go` for scaling at current state.
+- [x] Implement exporter v1 for cTrader and Pine (supported subset)
+  - Completed: 2026-03-17
+  - Notes: Replaced export placeholder artifacts with generated cTrader/Pine code for supported canonical strategies plus diagnostics for incomplete or unsupported campaigns.
 
 ### M5 - Strategy Rollout From Specs (Planned)
 - [ ] Implement S1 Trend EMA Breakout as production bot module
@@ -171,14 +174,16 @@ Recommended command:
 ## Active Task Board
 
 ### Now
-- [ ] Start exporter parity checks (`ctrader`, `pine`)
-- [ ] Run `momentum_rider` refinement v2 on `EURUSD 1h` and `NAS100 1h`
+- [x] Start exporter parity checks (`ctrader`, `pine`)
+  - Completed: 2026-03-17
+  - Notes: Added `scripts/export_parity.py` and parity helpers in `cbot_farm/exporters.py`; `ema_cross_atr` passed parity on both `ctrader` and `pine` in `reports/parity/export_parity_ema_cross_atr_20260317_153417.json`.
 
 ### Next
 - [ ] Resume M5.1: implement S1 Trend EMA Breakout as production bot module
 - [ ] Tighten `ema_cross_atr` acceptance gates after the latest batch improvements
 - [ ] Consider adding UI-level filters/pagination controls now that API support is in place
 - [ ] Connect intake artifacts directly to campaign creation for terminal-free orchestration
+- [ ] Keep `momentum_rider` frozen as a research baseline unless new evidence justifies reopening it
 
 ### Blocked / Decisions Needed
 - [ ] Finalize UI design system choice (minimal custom vs component library)
@@ -239,3 +244,10 @@ Recommended command:
 - 2026-03-17: Completed M3.3 by introducing canonical report schema migration helpers and versioned run/manifest writers.
 - 2026-03-17: Completed M3.4 with smoke coverage for API handler routes and frontend route registration.
 - 2026-03-17: Validated the intake-driven development loop on `momentum_rider` from `reports/strategy_intake/intake_20260317_084240_090608_momentum-rider.json`; first pass result is `iterate`, not `candidate`.
+- 2026-03-17: Completed `momentum_rider` refinement v2 with MACD zero-line, ADX, and ATR-relative-volatility filters; signal quality improved, especially on `NAS100 1h`, but OOS degradation still blocks promotion.
+- 2026-03-17: Tested and rejected a `momentum_rider` v3 EMA-extension filter probe on `NAS100 1h`; it lowered trade count and drawdown but degraded Sharpe/return, so the active baseline remains v2.
+- 2026-03-17: Tested and rejected a `momentum_rider` v4 UTC session-filter probe on `NAS100 1h`; it reduced trade count but remained worse than the v2 baseline on return, Sharpe, and OOS behavior.
+- 2026-03-17: Tested and rejected a `momentum_rider` v5 higher-timeframe context probe on `NAS100 1h`; the best result matched the v2 baseline exactly, so the added complexity was not kept.
+- 2026-03-17: Added a generic runtime exit-management hook to the backtest engine and validated it with unit coverage, then rejected the first `momentum_rider` dynamic exit probe because it materially worsened return, Sharpe, and OOS behavior on `NAS100 1h`.
+- 2026-03-17: Froze `momentum_rider` as a research baseline (`v2`) and resumed engine work.
+- 2026-03-17: Completed exporter v1 for supported strategies, replacing placeholder export artifacts with generated cTrader/Pine code and diagnostics.

@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from cbot_farm.exporters import export_campaign_payload, write_export_manifest
 
 ALLOWED_STATES = {
     "queued",
@@ -88,6 +89,8 @@ class CampaignStore:
             "updated_at": now,
             "prompt": payload.get("prompt", ""),
             "prompts": payload.get("prompts", []),
+            "strategy_id": payload.get("strategy_id"),
+            "params": payload.get("params", {}),
             "targets": payload.get("targets", {}),
             "constraints": payload.get("constraints", {}),
             "gates": payload.get("gates", {}),
@@ -251,6 +254,18 @@ class CampaignOrchestrator:
         }
         campaign["status"] = to_state
         campaign.setdefault("history", []).append(event)
+        return self.store.save_campaign(campaign)
+
+    def _record_event(self, campaign: Dict[str, Any], event_name: str, reason: str) -> Dict[str, Any]:
+        campaign.setdefault("history", []).append(
+            {
+                "at": _utc_now(),
+                "event": event_name,
+                "from_state": campaign.get("status"),
+                "to_state": campaign.get("status"),
+                "reason": reason,
+            }
+        )
         return self.store.save_campaign(campaign)
 
     def create(self, payload: Dict[str, Any]) -> Dict[str, Any]:
@@ -504,17 +519,22 @@ class CampaignOrchestrator:
             raise ValueError("unsupported export target")
 
         campaign = self.store.get_campaign(campaign_id)
-        stub = {
-            "campaign_id": campaign_id,
-            "target": normalized,
-            "status": "queued",
-            "requested_at": _utc_now(),
-            "note": "Exporter v1 placeholder artifact",
-        }
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        export_payload = export_campaign_payload(
+            campaign=campaign,
+            target=normalized,
+            out_dir=self.store.exports_dir(campaign_id),
+            stamp=stamp,
+        )
+        export_payload["campaign_id"] = campaign_id
+        export_payload["requested_at"] = _utc_now()
+        manifest_path = write_export_manifest(
+            out_dir=self.store.exports_dir(campaign_id),
+            target=normalized,
+            stamp=stamp,
+            payload=export_payload,
+        )
+        export_payload["manifest_file"] = manifest_path.name
 
-        out_file = self.store.exports_dir(campaign_id) / f"{normalized}_request_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.json"
-        with out_file.open("w", encoding="utf-8") as fh:
-            json.dump(stub, fh, indent=2)
-
-        self._transition(campaign, "refinement_planned", f"export requested for {normalized}")
-        return stub
+        self._record_event(campaign, "export_requested", f"export generated for {normalized}")
+        return export_payload
